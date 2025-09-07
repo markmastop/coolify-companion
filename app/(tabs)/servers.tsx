@@ -58,6 +58,8 @@ export default function ServersScreen() {
     </TouchableOpacity>
   );
 
+  const sortedServers = [...servers].sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <>
       <ScrollView 
@@ -98,7 +100,7 @@ export default function ServersScreen() {
           ) : (
             <View style={styles.serversContainer}>
               <FlatList
-                data={servers}
+                data={sortedServers}
                 renderItem={renderServerItem}
                keyExtractor={(item) => item.uuid}
                 scrollEnabled={false}
