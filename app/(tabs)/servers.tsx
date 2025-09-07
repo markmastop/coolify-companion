@@ -28,8 +28,10 @@ export default function ServersScreen() {
   }
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'Unknown';
+    console.log('Date string received:', dateString);
+    if (!dateString) return 'No date';
     const date = new Date(dateString);
+    console.log('Parsed date:', date);
     if (isNaN(date.getTime())) return 'Invalid date';
     return date.toLocaleDateString();
   };
@@ -55,7 +57,7 @@ export default function ServersScreen() {
       <View style={styles.serverMeta}>
         <StatusChip status={item.settings.is_reachable ? 'up' : 'down'} size="small" />
         <Text style={styles.lastUpdate}>
-          {formatDate(item.updated_at)}
+          {formatDate(item.updated_at || 'No updated_at field')}
         </Text>
       </View>
     </TouchableOpacity>
@@ -158,7 +160,7 @@ export default function ServersScreen() {
               
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Created</Text>
-                <Text style={styles.detailValue}>{formatDate(selectedServer.created_at)}</Text>
+                <Text style={styles.detailValue}>{formatDate(selectedServer.updated_at || 'No date available')}</Text>
               </View>
             </ScrollView>
           </View>
