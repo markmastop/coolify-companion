@@ -126,11 +126,6 @@ class CoolifyApiService {
 
     const data = await response.json();
     
-    // Only log applications response
-    if (endpoint === '/applications') {
-      console.log('Applications API Response:', data);
-    }
-    
     return data;
   }
 
