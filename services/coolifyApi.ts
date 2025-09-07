@@ -103,7 +103,6 @@ class CoolifyApiService {
     }
 
     const url = `${this.config.baseUrl}${endpoint}`;
-    console.log('API Request:', url);
     
     const response = await fetch(url, {
       ...options,
@@ -113,8 +112,6 @@ class CoolifyApiService {
       },
     });
 
-    console.log('API Response Status:', response.status);
-    console.log('API Response Headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       if (response.status === 401 || response.status === 403 || response.status === 404) {
@@ -128,7 +125,12 @@ class CoolifyApiService {
     }
 
     const data = await response.json();
-    console.log('API Response Data:', data);
+    
+    // Only log applications response
+    if (endpoint === '/applications') {
+      console.log('Applications API Response:', data);
+    }
+    
     return data;
   }
 

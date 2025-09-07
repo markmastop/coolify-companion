@@ -37,10 +37,8 @@ export default function ServersScreen() {
   }
 
   const formatDate = (dateString: string) => {
-    console.log('Date string received:', dateString);
     if (!dateString) return 'No date';
     const date = new Date(dateString);
-    console.log('Parsed date:', date);
     if (isNaN(date.getTime())) return 'Invalid date';
     return date.toLocaleDateString();
   };
