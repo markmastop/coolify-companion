@@ -17,12 +17,12 @@ export function ConfigScreen() {
     // Show the endpoint we will call for testing
     const clean = baseUrl.trim().replace(/\/+$/, '');
     if (!clean) return '';
-    return `${clean}/api/v1/servers`;
+    return `${clean}/api/v1`;
   }, [baseUrl]);
 
   const handleSave = async () => {
     if (!baseUrl.trim() || !token.trim()) {
-      setErrorMessage('Please fill in both fields (URL and API token).');
+      setErrorMessage('❌ Both Coolify URL and API token are required.');
       return;
     }
 
@@ -35,30 +35,44 @@ export function ConfigScreen() {
       const tempConfig = { baseUrl: fullUrl, token: token.trim() };
       setPendingConfig(tempConfig);
 
-      // Validate URL + API token before saving
+      // Test connection using /api/v1/servers endpoint
       const test = await coolifyApi.testConnection(tempConfig);
       if (!test.ok) {
-        const isAuthError = test.status === 401 || test.status === 403;
-        const suggestions = isAuthError
-          ? 'Verify the token on Coolify (Settings → API) and try again.'
-          : test.status === 404
-            ? 'Ensure the URL points to your Coolify domain. Do not append extra paths; the app tests /api/v1/servers automatically.'
-            : 'Check the URL, internet connectivity, SSL certificate, and CORS settings.';
-        const combined = `${test.message}\n\n${suggestions}`;
-        setErrorMessage(combined);
+        let errorMessage = '';
+        
+        switch (test.status) {
+          case 401:
+          case 403:
+            errorMessage = '🔐 Authentication Failed\n\nThe API token is invalid or expired.\n\n✅ How to fix:\n• Go to Coolify Dashboard → Settings → API\n• Create a new API token\n• Copy the token exactly as shown';
+            break;
+          case 404:
+            errorMessage = '🔍 API Endpoint Not Found\n\nThe Coolify API is not accessible at this URL.\n\n✅ How to fix:\n• Verify your Coolify domain is correct\n• Ensure Coolify is running and accessible\n• Check if you need https:// or http://';
+            break;
+          case 500:
+            errorMessage = '⚠️ Server Error\n\nCoolify server returned an internal error.\n\n✅ How to fix:\n• Check Coolify server logs\n• Try again in a few moments\n• Contact your Coolify administrator';
+            break;
+          default:
+            if (!test.status) {
+              errorMessage = '🌐 Connection Failed\n\nCannot reach the Coolify server.\n\n✅ How to fix:\n• Check your internet connection\n• Verify the URL is correct\n• Ensure Coolify is running';
+            } else {
+              errorMessage = `❌ Connection Error (${test.status})\n\n${test.message}\n\n✅ How to fix:\n• Check the URL and try again\n• Verify Coolify is accessible\n• Check SSL certificate if using HTTPS`;
+            }
+        }
+        
+        setErrorMessage(errorMessage);
         // If on web and likely CORS/preflight issue, allow bypass
-        const looksLikeCors = Platform.OS === 'web' && (/CORS|Preflight|preflight|Failed to fetch|redirect/i.test(combined) || !test.status);
+        const looksLikeCors = Platform.OS === 'web' && (/CORS|Preflight|preflight|Failed to fetch|redirect/i.test(test.message) || !test.status);
         setAllowSaveAnyway(looksLikeCors);
         return;
       }
 
       await setConfig(tempConfig);
-      Alert.alert('Connected', 'Configuration saved successfully.');
+      Alert.alert('✅ Connected!', 'Successfully connected to Coolify. You can now manage your servers and applications.');
       setErrorMessage(null);
       setAllowSaveAnyway(false);
       setPendingConfig(null);
     } catch (error) {
-      setErrorMessage('Unexpected error: Failed to save configuration. Please try again.');
+      setErrorMessage('❌ Unexpected Error\n\nFailed to save configuration.\n\n✅ How to fix:\n• Check your internet connection\n• Try again in a few moments\n• Restart the app if the problem persists');
     } finally {
       setIsLoading(false);
     }
@@ -69,12 +83,12 @@ export function ConfigScreen() {
     setIsLoading(true);
     try {
       await setConfig(pendingConfig);
-      Alert.alert('Saved', 'Configuration saved without browser validation.');
+      Alert.alert('⚠️ Saved', 'Configuration saved without validation. Some features may not work properly if the connection is invalid.');
       setErrorMessage(null);
       setAllowSaveAnyway(false);
       setPendingConfig(null);
     } catch (e) {
-      setErrorMessage('Failed to save configuration.');
+      setErrorMessage('❌ Failed to save configuration. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -110,7 +124,7 @@ export function ConfigScreen() {
               keyboardType="url"
             />
             {!!normalizedUrl && (
-              <Text style={styles.helperText}>Connecting to: {normalizedUrl}</Text>
+              <Text style={styles.helperText}>Will test connection to: {normalizedUrl}/servers</Text>
             )}
           </View>
 

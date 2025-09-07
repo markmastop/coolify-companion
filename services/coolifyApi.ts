@@ -36,7 +36,7 @@ class CoolifyApiService {
   // Validate a provided config by pinging a simple endpoint
   async testConnection(config: ApiConfig): Promise<{ ok: boolean; status?: number; message: string }> {
     try {
-      // Use the servers endpoint for validation - config.baseUrl should already include /api/v1
+      // Test connection using /api/v1/servers endpoint
       const url = `${config.baseUrl}/servers`;
       const response = await fetch(url, {
         headers: {
@@ -47,7 +47,7 @@ class CoolifyApiService {
       });
 
       if (response.ok) {
-        return { ok: true, message: 'OK' };
+        return { ok: true, message: 'Connection successful' };
       }
 
       let detailed = '';
@@ -68,17 +68,19 @@ class CoolifyApiService {
       let message: string;
       switch (response.status) {
         case 401:
+          message = 'Invalid API token';
+          break;
         case 403:
-          message = 'Unauthorized: The API token is invalid for this Coolify URL.';
+          message = 'Access forbidden - check API token permissions';
           break;
         case 404:
-          message = `Not Found: The endpoint ${url} does not exist. Please verify the server URL and API base path.`;
+          message = 'Coolify API not found at this URL';
           break;
         case 500:
-          message = 'Server Error: Coolify responded with an internal error (500).';
+          message = 'Coolify server internal error';
           break;
         default:
-          message = `API Error: ${response.status} ${response.statusText}`;
+          message = `HTTP ${response.status}: ${response.statusText}`;
       }
 
       if (detailed && detailed !== message) {
@@ -88,14 +90,10 @@ class CoolifyApiService {
       return { ok: false, status: response.status, message };
     } catch (error) {
       const baseMsg = error instanceof Error ? error.message : 'Unknown error';
-      let message = `Network Error: ${baseMsg}`;
-      if (Platform.OS === 'web') {
-        message += `\nCORS/Preflight: The browser blocked the request. If your server redirects or lacks CORS headers for OPTIONS/GET, preflight fails.\n` +
-          `Fix: Enable CORS on your Coolify API (allow Authorization header), avoid redirects on /api/v1/servers, or use the native app (Expo Go) to finish setup.`;
-      } else {
-        message += `\nHint: Check your domain and SSL certificate.`;
-      }
-      return { ok: false, message };
+      return { 
+        ok: false, 
+        message: Platform.OS === 'web' ? `Network error: ${baseMsg}` : `Connection failed: ${baseMsg}`
+      };
     }
   }
 
