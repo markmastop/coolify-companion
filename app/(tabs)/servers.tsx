@@ -28,7 +28,10 @@ export default function ServersScreen() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
+    if (!dateString) return 'Unknown';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'Invalid date';
+    return date.toLocaleString();
   };
 
   const renderServerItem = ({ item }: { item: CoolifyServer }) => (
