@@ -75,26 +75,26 @@ export default function ApplicationsScreen() {
     <View style={styles.appRow}>
       <View style={styles.appInfo}>
         <Text style={styles.appName} numberOfLines={1}>
-          {item.name}
+          {String(item.name)}
         </Text>
         <Text style={styles.appId} numberOfLines={1}>
-          UUID: {item.uuid}
+          UUID: {String(item.uuid)}
         </Text>
         {item.description && (
           <Text style={styles.appDescription} numberOfLines={2}>
-            {item.description}
+            {String(item.description)}
           </Text>
         )}
         {item.git_repository && (
           <Text style={styles.appRepo} numberOfLines={1}>
-            {item.git_repository} ({item.git_branch || 'main'})
+            {String(item.git_repository)} ({String(item.git_branch || 'main')})
           </Text>
         )}
         <Text style={styles.appStatus}>
-          Status: {item.status}
+          Status: {String(item.status)}
         </Text>
         <Text style={styles.lastUpdate}>
-          Updated: {formatDate(item.updated_at)}
+          Updated: {String(formatDate(item.updated_at))}
         </Text>
       </View>
       <View style={styles.appActions}>
