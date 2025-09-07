@@ -5,9 +5,10 @@ interface StatCardProps {
   value: number;
   color: 'green' | 'red' | 'blue' | 'orange';
   icon: string;
+  subtitle?: string;
 }
 
-export function StatCard({ title, value, color, icon }: StatCardProps) {
+export function StatCard({ title, value, color, icon, subtitle }: StatCardProps) {
   const getColors = () => {
     switch (color) {
       case 'green':
@@ -38,6 +39,9 @@ export function StatCard({ title, value, color, icon }: StatCardProps) {
         <Text style={[styles.value, { color: colors.text }]}>{value}</Text>
       </View>
       <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+      {subtitle && (
+        <Text style={[styles.subtitle, { color: colors.text }]}>{subtitle}</Text>
+      )}
     </View>
   );
 }
@@ -67,5 +71,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 10,
+    fontWeight: '400',
+    textAlign: 'center',
+    marginTop: 2,
+    opacity: 0.8,
   },
 });

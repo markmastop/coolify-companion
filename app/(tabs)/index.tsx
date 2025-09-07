@@ -18,6 +18,7 @@ export default function DashboardScreen() {
     refreshDeployments, 
     refreshServers,
     refreshServices,
+    refreshApplications,
     clearError 
   } = useCoolify();
 
@@ -27,15 +28,16 @@ export default function DashboardScreen() {
       refreshServers();
       refreshDeployments();
       refreshServices();
+      refreshApplications();
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [refreshServers, refreshDeployments]);
+  }, [refreshServers, refreshDeployments, refreshServices, refreshApplications]);
 
   const onRefresh = useCallback(async () => {
     clearError();
-    await Promise.all([refreshServers(), refreshDeployments(), refreshServices()]);
-  }, [refreshServers, refreshDeployments, refreshServices, clearError]);
+    await Promise.all([refreshServers(), refreshDeployments(), refreshServices(), refreshApplications()]);
+  }, [refreshServers, refreshDeployments, refreshServices, refreshApplications, clearError]);
 
   if (!isConfigured) {
     return <ConfigScreen />;
@@ -43,8 +45,20 @@ export default function DashboardScreen() {
 
   const serversUp = servers.filter(s => s.settings.is_reachable).length;
   const serversDown = servers.filter(s => !s.settings.is_reachable).length;
-  const runningDeployments = deployments.filter(d => d.status === 'running').length;
-  const runningServices = services.filter(s => s.status.includes('running')).length;
+  
+  // Applications stats
+  const totalApplications = applications.length;
+  const applicationsUp = applications.filter(app => 
+    app.status && (app.status.includes('running') || app.status.includes('healthy'))
+  ).length;
+  const applicationsDown = totalApplications - applicationsUp;
+  
+  // Services stats  
+  const totalServices = services.length;
+  const servicesUp = services.filter(service => 
+    service.status && service.status.includes('running') && service.status.includes('healthy')
+  ).length;
+  const servicesDown = totalServices - servicesUp;
 
   const formatTimeAgo = (dateString: string) => {
     const now = new Date();
@@ -104,22 +118,25 @@ export default function DashboardScreen() {
 
       <View style={styles.statsContainer}>
         <StatCard
-          title="Servers UP"
+          title={`Servers (${String(servers.length)})`}
           value={serversUp}
           color="green"
-          icon="✅"
+          icon="🖥️"
+          subtitle={`${String(serversDown)} down`}
         />
         <StatCard
-          title="Servers DOWN"
-          value={serversDown}
-          color="red"
-          icon="❌"
-        />
-        <StatCard
-          title="Running Services"
-          value={runningServices}
+          title={`Apps (${String(totalApplications)})`}
+          value={applicationsUp}
           color="blue"
-          icon="🚀"
+          icon="📱"
+          subtitle={`${String(applicationsDown)} down`}
+        />
+        <StatCard
+          title={`Services (${String(totalServices)})`}
+          value={servicesUp}
+          color="orange"
+          icon="⚙️"
+          subtitle={`${String(servicesDown)} down`}
         />
       </View>
 
