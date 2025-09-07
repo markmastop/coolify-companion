@@ -1,6 +1,6 @@
-# Coolify Monitor App
+# Coolify Companion
 
-A mobile monitoring app for Coolify, built with Expo and React Native. This allows administrators to quickly get insights into servers, applications, and deployments on the go.
+A mobile companion app for Coolify, built with Expo and React Native. This allows administrators to quickly get insights into servers, applications, and deployments on the go.
 
 ## Features
 
@@ -25,7 +25,7 @@ A mobile monitoring app for Coolify, built with Expo and React Native. This allo
    ```bash
    # If using git
    git clone <repository-url>
-   cd coolify-monitor-app
+   cd coolify-companion
    ```
 
 2. **Install dependencies**

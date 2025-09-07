@@ -71,7 +71,7 @@ export default function DashboardScreen() {
       }
     >
       <View style={styles.header}>
-        <Text style={styles.title}>Coolify Monitor</Text>
+        <Text style={styles.title}>Coolify Companion</Text>
         <View style={styles.headerActions}>
           <View style={styles.connectionIndicator}>
             <Wifi size={16} color="#10B981" />
