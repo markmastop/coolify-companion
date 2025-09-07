@@ -179,6 +179,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#111827',
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  connectionIndicator: {
+    backgroundColor: '#DCFCE7',
+    borderRadius: 12,
+    padding: 6,
+    borderWidth: 1,
+    borderColor: '#10B981',
+  },
   errorContainer: {
     backgroundColor: '#FEE2E2',
     borderColor: '#FECACA',
