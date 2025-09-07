@@ -55,7 +55,7 @@ export default function ServersScreen() {
       <View style={styles.serverMeta}>
         <StatusChip status={item.settings.is_reachable ? 'up' : 'down'} size="small" />
         <Text style={styles.lastUpdate}>
-          {formatDate(item.updated_at)}
+          {formatDate(item.created_at)}
         </Text>
       </View>
     </TouchableOpacity>
@@ -157,8 +157,8 @@ export default function ServersScreen() {
               )}
               
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Last Updated</Text>
-                <Text style={styles.detailValue}>{formatDate(selectedServer.updated_at)}</Text>
+                <Text style={styles.detailLabel}>Created</Text>
+                <Text style={styles.detailValue}>{formatDate(selectedServer.created_at)}</Text>
               </View>
             </ScrollView>
           </View>
