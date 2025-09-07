@@ -1,62 +1,64 @@
 # Coolify Monitor App
 
-Een mobiele monitoring app voor Coolify, gebouwd met Expo en React Native. Hiermee kunnen beheerders onderweg snel inzicht krijgen in servers, applicaties en deployments.
+A mobile monitoring app for Coolify, built with Expo and React Native. This allows administrators to quickly get insights into servers, applications, and deployments on the go.
 
 ## Features
 
-- 📊 **Dashboard** - Real-time overzicht van server status en lopende deployments
-- 🖥️ **Server Monitoring** - UP/DOWN status van alle servers
-- 📱 **Application Management** - Overzicht van apps met logs en redeploy functionaliteit
-- 📄 **Live Logs** - Real-time log viewing met auto-refresh
-- 🔄 **Smart Polling** - Intelligente refresh strategie (5s voor actieve deploys, 30s voor servers)
-- 💾 **Offline Cache** - Lokale opslag van laatste status
+- 📊 **Dashboard** - Real-time overview of server status and running deployments
+- 🖥️ **Server Monitoring** - UP/DOWN status of all servers
+- 📱 **Application Management** - App overview with logs and redeploy functionality
+- 📄 **Live Logs** - Real-time log viewing with auto-refresh
+- 🔄 **Smart Polling** - Intelligent refresh strategy (5s for active deploys, 30s for servers)
+- 💾 **Offline Cache** - Local storage of last status
 
-## Lokaal Draaien
+## Running Locally
 
-### Vereisten
+### Prerequisites
 
-- Node.js (versie 18 of hoger)
-- npm of yarn
-- Expo CLI (optioneel, maar aanbevolen)
+- Node.js (version 18 or higher)
+- npm or yarn
+- Expo CLI (optional but recommended)
 
-### Installatie
+### Installation
 
-1. **Clone of download het project**
+1. **Clone or download the project**
    ```bash
-   # Als je git gebruikt
+   # If using git
    git clone <repository-url>
    cd coolify-monitor-app
    ```
 
-2. **Installeer dependencies**
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. **Start de development server**
+3. **Start the development server**
    ```bash
    npm run dev
+   # or using Expo CLI
+   npx expo start
    ```
 
-4. **Open de app**
-   - **Web**: De app opent automatisch in je browser op `http://localhost:8081`
-   - **Mobile**: Scan de QR-code met de Expo Go app op je telefoon
-   - **iOS Simulator**: Druk op `i` in de terminal
-   - **Android Emulator**: Druk op `a` in de terminal
+4. **Open the app**
+   - **Web**: The app opens automatically in your browser at `http://localhost:8081`
+   - **Mobile**: Scan the QR code with the Expo Go app on your phone
+   - **iOS Simulator**: Press `i` in the terminal
+   - **Android Emulator**: Press `a` in the terminal
 
-### Configuratie
+### Configuration
 
-Bij eerste gebruik moet je je Coolify API configureren:
+On first use, you need to configure your Coolify API:
 
-1. **Coolify Host URL**: `https://jouw-coolify-domein.com`
-2. **API Token**: Verkrijg deze via Coolify Dashboard → Settings → API
+1. **Coolify Host URL**: `https://your-coolify-domain.com`
+2. **API Token**: Get this via Coolify Dashboard → Settings → API
 
-### API Token Verkrijgen
+### Getting API Token
 
-1. Ga naar je Coolify dashboard
-2. Navigeer naar **Settings** → **API**
-3. Maak een nieuwe API token aan
-4. Kopieer de token en plak deze in de app
+1. Go to your Coolify dashboard
+2. Navigate to **Settings** → **API**
+3. Create a new API token
+4. Copy the token and paste it in the app
 
 ### Development Commands
 
@@ -64,28 +66,80 @@ Bij eerste gebruik moet je je Coolify API configureren:
 # Start development server
 npm run dev
 
-# Build voor web
+# Start with Expo CLI
+npx expo start
+
+# Start with clear cache
+npx expo start --clear
+
+# Build for web
 npm run build:web
+
+# Build for production
+npx expo build
+
+# Install on iOS simulator
+npx expo run:ios
+
+# Install on Android emulator
+npx expo run:android
 
 # Lint code
 npm run lint
+
+# Check Expo doctor
+npx expo doctor
+
+# Update Expo SDK
+npx expo install --fix
 ```
 
-### Project Structuur
+### Expo CLI Commands
+
+```bash
+# Install Expo CLI globally (optional)
+npm install -g @expo/cli
+
+# Create new Expo project
+npx create-expo-app --template
+
+# Start development server
+expo start
+
+# Start with specific platform
+expo start --web
+expo start --ios
+expo start --android
+
+# Build for app stores
+expo build:ios
+expo build:android
+
+# Publish to Expo
+expo publish
+
+# Check project health
+expo doctor
+
+# Update dependencies
+expo install --fix
+```
+
+### Project Structure
 
 ```
 app/
-├── (tabs)/              # Tab navigatie screens
+├── (tabs)/              # Tab navigation screens
 │   ├── index.tsx        # Dashboard
-│   ├── servers.tsx      # Server overzicht
-│   ├── applications.tsx # Applicatie beheer
+│   ├── servers.tsx      # Server overview
+│   ├── applications.tsx # Application management
 │   └── logs.tsx         # Logs viewer
 ├── _layout.tsx          # Root layout
-└── +not-found.tsx       # 404 pagina
+└── +not-found.tsx       # 404 page
 
-components/              # Herbruikbare componenten
-├── ConfigScreen.tsx     # API configuratie
-├── StatCard.tsx         # Dashboard statistieken
+components/              # Reusable components
+├── ConfigScreen.tsx     # API configuration
+├── StatCard.tsx         # Dashboard statistics
 └── StatusChip.tsx       # Status indicators
 
 contexts/                # React Context providers
@@ -94,7 +148,7 @@ contexts/                # React Context providers
 services/                # API services
 └── coolifyApi.ts        # Coolify API client
 
-types/                   # TypeScript definities
+types/                   # TypeScript definitions
 └── coolify.ts           # Coolify data types
 ```
 
@@ -102,7 +156,7 @@ types/                   # TypeScript definities
 
 **Module resolution errors:**
 ```bash
-# Clear cache en herinstalleer
+# Clear cache and reinstall
 rm -rf node_modules package-lock.json
 npm install
 npm run dev
@@ -114,24 +168,47 @@ npm run dev
 npx expo start --clear
 ```
 
+**iOS simulator not opening:**
+```bash
+# Install iOS simulator
+npx expo install --ios
+# Or manually open Xcode and install simulator
+```
+
+**Android emulator issues:**
+```bash
+# Check Android setup
+npx expo doctor
+# Install Android dependencies
+npx expo install --android
+```
+
+**Expo CLI issues:**
+```bash
+# Update Expo CLI
+npm install -g @expo/cli@latest
+# Check project health
+npx expo doctor
+```
+
 ## Coolify API Endpoints
 
-De app gebruikt de volgende Coolify API endpoints:
+The app uses the following Coolify API endpoints:
 
-- `GET /api/servers` - Server lijst en status
-- `GET /api/deployments` - Deployment overzicht
-- `GET /api/applications` - Applicatie lijst
-- `GET /api/applications/{uuid}/logs` - Applicatie logs
+- `GET /api/servers` - Server list and status
+- `GET /api/deployments` - Deployment overview
+- `GET /api/applications` - Application list
+- `GET /api/applications/{uuid}/logs` - Application logs
 - `POST /api/deploy?uuid={uuid}&force=true` - Trigger redeploy
 
 ## Contributing
 
-1. Fork het project
-2. Maak een feature branch (`git checkout -b feature/nieuwe-functie`)
-3. Commit je changes (`git commit -am 'Voeg nieuwe functie toe'`)
-4. Push naar de branch (`git push origin feature/nieuwe-functie`)
-5. Maak een Pull Request
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Create a Pull Request
 
 ## License
 
-Dit project is gelicenseerd onder de MIT License.
+This project is licensed under the MIT License.
