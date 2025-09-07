@@ -1,31 +1,86 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
+import { coolifyApi } from '@/services/coolifyApi';
+import { ApiConfig } from '@/types/coolify';
 
 export function ConfigScreen() {
   const { setConfig } = useCoolify();
   const [baseUrl, setBaseUrl] = useState('');
   const [token, setToken] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [allowSaveAnyway, setAllowSaveAnyway] = useState(false);
+  const [pendingConfig, setPendingConfig] = useState<ApiConfig | null>(null);
+
+  const normalizedUrl = useMemo(() => {
+    // Show the endpoint we will call for testing: /api/v1/servers
+    const clean = baseUrl.trim().replace(/\/+$/, '');
+    if (!clean) return '';
+    if (clean.endsWith('/api/v1')) return `${clean}/servers`;
+    if (clean.endsWith('/api')) return `${clean}/v1/servers`;
+    return `${clean}/api/v1/servers`;
+  }, [baseUrl]);
 
   const handleSave = async () => {
     if (!baseUrl.trim() || !token.trim()) {
-      Alert.alert('Error', 'Please fill in both fields');
+      setErrorMessage('Please fill in both fields (URL and API token).');
       return;
     }
 
     const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
-    const fullUrl = `${cleanUrl}/api`;
+    // Ensure "/api/v1" (handle if user provided "/api")
+    const fullUrl = cleanUrl.endsWith('/api/v1')
+      ? cleanUrl
+      : cleanUrl.endsWith('/api')
+        ? `${cleanUrl}/v1`
+        : `${cleanUrl}/api/v1`;
 
     setIsLoading(true);
     try {
-      await setConfig({
-        baseUrl: fullUrl,
-        token: token.trim(),
-      });
-      Alert.alert('Success', 'Configuration saved successfully!');
+      const tempConfig = { baseUrl: fullUrl, token: token.trim() };
+      setPendingConfig(tempConfig);
+
+      // Validate URL + API token before saving
+      const test = await coolifyApi.testConnection(tempConfig);
+      if (!test.ok) {
+        const isAuthError = test.status === 401 || test.status === 403;
+        const suggestions = isAuthError
+          ? 'Verify the token on Coolify (Settings → API) and try again.'
+          : test.status === 404
+            ? 'Ensure the URL points to your Coolify domain. Do not append extra paths; the app tests /api/v1/servers automatically.'
+            : 'Check the URL, internet connectivity, SSL certificate, and CORS settings.';
+        const combined = `${test.message}\n\n${suggestions}`;
+        setErrorMessage(combined);
+        // If on web and likely CORS/preflight issue, allow bypass
+        const looksLikeCors = Platform.OS === 'web' && (/CORS|Preflight|preflight|Failed to fetch|redirect/i.test(combined) || !test.status);
+        setAllowSaveAnyway(looksLikeCors);
+        return;
+      }
+
+      await setConfig(tempConfig);
+      Alert.alert('Connected', 'Configuration saved successfully.');
+      setErrorMessage(null);
+      setAllowSaveAnyway(false);
+      setPendingConfig(null);
     } catch (error) {
-      Alert.alert('Error', 'Failed to save configuration');
+      setErrorMessage('Unexpected error: Failed to save configuration. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveAnyway = async () => {
+    if (!pendingConfig) return;
+    setIsLoading(true);
+    try {
+      await setConfig(pendingConfig);
+      Alert.alert('Saved', 'Configuration saved without browser validation.');
+      setErrorMessage(null);
+      setAllowSaveAnyway(false);
+      setPendingConfig(null);
+    } catch (e) {
+      setErrorMessage('Failed to save configuration.');
     } finally {
       setIsLoading(false);
     }
@@ -39,6 +94,15 @@ export function ConfigScreen() {
           Enter your Coolify instance details to get started
         </Text>
 
+        {errorMessage && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{errorMessage}</Text>
+            <TouchableOpacity onPress={() => setErrorMessage(null)}>
+              <Text style={styles.errorDismiss}>Dismiss</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         <View style={styles.form}>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Coolify Host URL</Text>
@@ -51,6 +115,9 @@ export function ConfigScreen() {
               autoCorrect={false}
               keyboardType="url"
             />
+            {!!normalizedUrl && (
+              <Text style={styles.helperText}>Connecting to: {normalizedUrl}</Text>
+            )}
           </View>
 
           <View style={styles.inputGroup}>
@@ -75,6 +142,18 @@ export function ConfigScreen() {
               {isLoading ? 'Connecting...' : 'Save Configuration'}
             </Text>
           </TouchableOpacity>
+
+          {allowSaveAnyway && (
+            <TouchableOpacity
+              style={[styles.saveAnywayButton, isLoading && styles.saveAnywayButtonDisabled]}
+              onPress={handleSaveAnyway}
+              disabled={isLoading}
+            >
+              <Text style={styles.saveAnywayButtonText}>
+                Save anyway (bypass browser CORS check)
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.help}>
@@ -114,6 +193,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 40,
   },
+  errorContainer: {
+    backgroundColor: '#FEE2E2',
+    borderColor: '#FECACA',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+    marginBottom: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: '#DC2626',
+    fontSize: 14,
+    flex: 1,
+  },
+  errorDismiss: {
+    color: '#DC2626',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 12,
+  },
   form: {
     marginBottom: 40,
   },
@@ -135,6 +237,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#111827',
   },
+  helperText: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 6,
+  },
   saveButton: {
     backgroundColor: '#3B82F6',
     borderRadius: 8,
@@ -148,6 +255,23 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
+    fontWeight: '600',
+  },
+  saveAnywayButton: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+  },
+  saveAnywayButtonDisabled: {
+    backgroundColor: '#E5E7EB',
+  },
+  saveAnywayButtonText: {
+    color: '#374151',
+    fontSize: 14,
     fontWeight: '600',
   },
   help: {

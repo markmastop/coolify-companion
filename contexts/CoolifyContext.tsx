@@ -43,6 +43,23 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
   // Load config and cached data on startup
   useEffect(() => {
     loadStoredData();
+
+    // Register a global unauthorized handler so any 401/403 forces re-login
+    coolifyApi.setUnauthorizedHandler(async () => {
+      try {
+        await AsyncStorage.removeItem(STORAGE_KEYS.CONFIG);
+        await AsyncStorage.removeItem(STORAGE_KEYS.SERVERS);
+        await AsyncStorage.removeItem(STORAGE_KEYS.DEPLOYMENTS);
+        await AsyncStorage.removeItem(STORAGE_KEYS.APPLICATIONS);
+      } catch {}
+
+      setConfigState(null);
+      setServers([]);
+      setDeployments([]);
+      setApplications([]);
+      setIsConfigured(false);
+      setError('Your session has expired or the API token is invalid. Please log in again.');
+    });
   }, []);
 
   // Setup polling when configured

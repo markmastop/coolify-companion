@@ -1,10 +1,25 @@
 import { ApiConfig, CoolifyServer, CoolifyDeployment, CoolifyApplication, CoolifyLogs } from '@/types/coolify';
+import { Platform } from 'react-native';
+
+class UnauthorizedError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'UnauthorizedError';
+    this.status = status;
+  }
+}
 
 class CoolifyApiService {
   private config: ApiConfig | null = null;
+  private unauthorizedHandler: (() => void) | null = null;
 
   setConfig(config: ApiConfig) {
     this.config = config;
+  }
+
+  setUnauthorizedHandler(handler: () => void) {
+    this.unauthorizedHandler = handler;
   }
 
   private getHeaders(): HeadersInit {
@@ -16,6 +31,73 @@ class CoolifyApiService {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
+  }
+
+  // Validate a provided config by pinging a simple endpoint
+  async testConnection(config: ApiConfig): Promise<{ ok: boolean; status?: number; message: string }> {
+    try {
+      // Use the servers endpoint under /api/v1 for validation
+      const apiBase = `${config.baseUrl}`.replace(/\/+$/, '');
+      const url = `${apiBase}/servers`;
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${config.token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        return { ok: true, message: 'OK' };
+      }
+
+      let detailed = '';
+      try {
+        const text = await response.text();
+        if (text) {
+          try {
+            const json = JSON.parse(text);
+            detailed = json?.message || json?.error || '';
+          } catch {
+            detailed = text;
+          }
+        }
+      } catch {
+        // ignore body parse errors
+      }
+
+      let message: string;
+      switch (response.status) {
+        case 401:
+        case 403:
+          message = 'Unauthorized: The API token is invalid for this Coolify URL.';
+          break;
+        case 404:
+          message = `Not Found: The endpoint ${url} does not exist. Please verify the server URL and API base path.`;
+          break;
+        case 500:
+          message = 'Server Error: Coolify responded with an internal error (500).';
+          break;
+        default:
+          message = `API Error: ${response.status} ${response.statusText}`;
+      }
+
+      if (detailed && detailed !== message) {
+        message = `${message}\nDetails: ${detailed}`;
+      }
+
+      return { ok: false, status: response.status, message };
+    } catch (error) {
+      const baseMsg = error instanceof Error ? error.message : 'Unknown error';
+      let message = `Network Error: ${baseMsg}`;
+      if (Platform.OS === 'web') {
+        message += `\nCORS/Preflight: The browser blocked the request. If your server redirects or lacks CORS headers for OPTIONS/GET, preflight fails.\n` +
+          `Fix: Enable CORS on your Coolify API (allow Authorization header), avoid redirects on /api/v1/servers, or use the native app (Expo Go) to finish setup.`;
+      } else {
+        message += `\nHint: Check your domain and SSL certificate.`;
+      }
+      return { ok: false, message };
+    }
   }
 
   private async fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
@@ -33,6 +115,10 @@ class CoolifyApiService {
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        this.unauthorizedHandler?.();
+        throw new UnauthorizedError('Unauthorized: Invalid or expired API token.', response.status);
+      }
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 

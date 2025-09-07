@@ -50,7 +50,7 @@ A mobile companion app for Coolify, built with Expo and React Native. This allow
 
 On first use, you need to configure your Coolify API:
 
-1. **Coolify Host URL**: `https://your-coolify-domain.com`
+1. **Coolify Host URL**: `https://your-coolify-domain.com` (the app appends `/api/v1` and tests connectivity using `/api/v1/servers`)
 2. **API Token**: Get this via Coolify Dashboard → Settings → API
 
 ### Getting API Token
@@ -193,13 +193,13 @@ npx expo doctor
 
 ## Coolify API Endpoints
 
-The app uses the following Coolify API endpoints:
+The app uses the following Coolify API endpoints (base `/api/v1`):
 
-- `GET /api/servers` - Server list and status
-- `GET /api/deployments` - Deployment overview
-- `GET /api/applications` - Application list
-- `GET /api/applications/{uuid}/logs` - Application logs
-- `POST /api/deploy?uuid={uuid}&force=true` - Trigger redeploy
+- `GET /api/v1/servers` - Server list and status
+- `GET /api/v1/deployments` - Deployment overview
+- `GET /api/v1/applications` - Application list
+- `GET /api/v1/applications/{uuid}/logs` - Application logs
+- `POST /api/v1/deploy?uuid={uuid}&force=true` - Trigger redeploy
 
 ## Contributing
 
