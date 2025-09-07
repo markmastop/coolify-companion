@@ -39,6 +39,23 @@ export default function LogsScreen() {
     d => d.application_name === name && d.status === 'running'
   );
 
+  // Handle configuration and UUID validation
+  useEffect(() => {
+    if (!isConfigured) {
+      Alert.alert('Error', 'Please configure your Coolify connection first', [
+        { text: 'OK', onPress: () => router.replace('/(tabs)/index') }
+      ]);
+      return;
+    }
+
+    if (!uuid) {
+      Alert.alert('Error', 'No application UUID provided', [
+        { text: 'OK', onPress: () => router.replace('/(tabs)/applications') }
+      ]);
+      return;
+    }
+  }, [isConfigured, uuid]);
+
   useEffect(() => {
     if (!isConfigured || !uuid) return;
     
@@ -97,22 +114,15 @@ export default function LogsScreen() {
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
     }
-    router.back();
+    router.replace('/(tabs)/applications');
   };
 
   const onRefresh = async () => {
     await fetchLogs();
   };
 
-  if (!isConfigured) {
-    Alert.alert('Error', 'Please configure your Coolify connection first');
-    router.back();
-    return null;
-  }
-
-  if (!uuid) {
-    Alert.alert('Error', 'No application UUID provided');
-    router.back();
+  // Don't render if not configured or no UUID
+  if (!isConfigured || !uuid) {
     return null;
   }
 
