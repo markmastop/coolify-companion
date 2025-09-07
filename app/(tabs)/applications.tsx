@@ -137,7 +137,7 @@ export default function ApplicationsScreen() {
       )}
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>All Applications ({applications.length})</Text>
+        <Text style={styles.sectionTitle}>All Applications ({String(applications.length)})</Text>
         {applications.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateText}>No applications found</Text>
@@ -150,7 +150,7 @@ export default function ApplicationsScreen() {
             <FlatList
               data={applications}
               renderItem={renderApplicationItem}
-             keyExtractor={(item) => item.uuid}
+              keyExtractor={(item) => String(item.uuid)}
               scrollEnabled={false}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
             />
