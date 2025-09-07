@@ -69,15 +69,18 @@ export default function ServicesScreen() {
         </Text>
       </View>
       <View style={styles.serviceMeta}>
-        <StatusChip 
-          status={getServiceStatusColor(item.status) === 'green' ? 'success' : 
-                 getServiceStatusColor(item.status) === 'orange' ? 'running' :
-                 getServiceStatusColor(item.status) === 'blue' ? 'running' : 'failed'} 
-          size="small" 
-        />
-        <Text style={styles.serviceStatus}>
-          {String(item.status)}
-        </Text>
+        {[
+          <StatusChip 
+            key="chip"
+            status={getServiceStatusColor(item.status) === 'green' ? 'success' : 
+                   getServiceStatusColor(item.status) === 'orange' ? 'running' :
+                   getServiceStatusColor(item.status) === 'blue' ? 'running' : 'failed'} 
+            size="small" 
+          />,
+          <Text key="text" style={styles.serviceStatus}>
+            {String(item.status)}
+          </Text>
+        ]}
       </View>
     </View>
   );

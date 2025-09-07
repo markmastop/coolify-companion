@@ -48,21 +48,12 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
   useEffect(() => {
     loadStoredData();
 
-    // Register a global unauthorized handler so any 401/403 forces re-login
+    // Register a global error handler: on any API error, return to login
     coolifyApi.setUnauthorizedHandler(async () => {
-      try {
-        await AsyncStorage.removeItem(STORAGE_KEYS.CONFIG);
-        await AsyncStorage.removeItem(STORAGE_KEYS.SERVERS);
-        await AsyncStorage.removeItem(STORAGE_KEYS.DEPLOYMENTS);
-        await AsyncStorage.removeItem(STORAGE_KEYS.APPLICATIONS);
-      } catch {}
-
-      setConfigState(null);
-      setServers([]);
-      setDeployments([]);
-      setApplications([]);
+      // For now, keep cached credentials so they can be shown on the login screen
+      // Do not clear stored config; simply mark as not configured to show ConfigScreen
       setIsConfigured(false);
-      setError('Connection error or invalid configuration. Please log in again.');
+      setError('API error. Please verify your configuration and log in again.');
     });
   }, []);
 
@@ -82,6 +73,26 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       clearInterval(serverPoller);
     };
   }, [isConfigured, deployments]);
+
+  // Ensure data is fetched immediately after configuration if caches are empty
+  useEffect(() => {
+    if (!isConfigured) return;
+    const needsInitialFetch =
+      servers.length === 0 ||
+      deployments.length === 0 ||
+      applications.length === 0 ||
+      services.length === 0;
+    if (needsInitialFetch) {
+      Promise.all([
+        refreshServers(),
+        refreshDeployments(),
+        refreshApplications(),
+        refreshServices(),
+      ]).catch(() => {
+        // errors are handled inside each refresh
+      });
+    }
+  }, [isConfigured]);
 
   const loadStoredData = async () => {
     try {

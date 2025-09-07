@@ -62,10 +62,12 @@ export default function ServersScreen() {
         )}
       </View>
       <View style={styles.serverMeta}>
-        <StatusChip status={item.settings.is_reachable ? 'up' : 'down'} size="small" />
-        <Text style={styles.lastUpdate}>
-          {String(formatDate(item.settings?.created_at || 'No date available'))}
-        </Text>
+        {[
+          <StatusChip key="chip" status={item.settings.is_reachable ? 'up' : 'down'} size="small" />,
+          <Text key="text" style={styles.lastUpdate}>
+            {String(formatDate(item.settings?.created_at || 'No date available'))}
+          </Text>
+        ]}
       </View>
     </TouchableOpacity>
   );

@@ -101,15 +101,19 @@ export default function ApplicationsScreen() {
           style={styles.actionButton}
           onPress={() => handleViewLogs(item)}
         >
-          <FileText size={16} color="#3B82F6" />
-          <Text style={styles.actionButtonText}>Logs</Text>
+          {[
+            <FileText key="icon" size={16} color="#3B82F6" />, 
+            <Text key="label" style={styles.actionButtonText}>Logs</Text>
+          ]}
         </TouchableOpacity>
         <TouchableOpacity 
           style={[styles.actionButton, styles.redeployButton]}
           onPress={() => handleRedeploy(item)}
         >
-          <RotateCcw size={16} color="#EF4444" />
-          <Text style={[styles.actionButtonText, styles.redeployButtonText]}>Redeploy</Text>
+          {[
+            <RotateCcw key="icon" size={16} color="#EF4444" />, 
+            <Text key="label" style={[styles.actionButtonText, styles.redeployButtonText]}>Redeploy</Text>
+          ]}
         </TouchableOpacity>
       </View>
     </View>

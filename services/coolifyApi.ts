@@ -1,4 +1,4 @@
-import { ApiConfig, CoolifyServer, CoolifyDeployment, CoolifyApplication, CoolifyLogs } from '@/types/coolify';
+import { ApiConfig, CoolifyServer, CoolifyDeployment, CoolifyApplication, CoolifyLogs, CoolifyService } from '@/types/coolify';
 import { Platform } from 'react-native';
 
 class UnauthorizedError extends Error {
@@ -16,6 +16,21 @@ class CoolifyApiService {
 
   setConfig(config: ApiConfig) {
     this.config = config;
+  }
+
+  private normalizeArrayResponse<T>(raw: any, keys: string[] = []): T[] {
+    // Common shapes: [] | { data: [] } | { data: { key: [] } } | { key: [] }
+    if (Array.isArray(raw)) return raw as T[];
+    if (raw?.data) {
+      if (Array.isArray(raw.data)) return raw.data as T[];
+      for (const k of keys) {
+        if (Array.isArray(raw.data?.[k])) return raw.data[k] as T[];
+      }
+    }
+    for (const k of keys) {
+      if (Array.isArray(raw?.[k])) return raw[k] as T[];
+    }
+    return [] as T[];
   }
 
   setUnauthorizedHandler(handler: () => void) {
@@ -103,46 +118,56 @@ class CoolifyApiService {
     }
 
     const url = `${this.config.baseUrl}${endpoint}`;
-    
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        ...this.getHeaders(),
-        ...options?.headers,
-      },
-    });
 
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          ...this.getHeaders(),
+          ...options?.headers,
+        },
+      });
 
-    if (!response.ok) {
-      if (response.status === 401 || response.status === 403 || response.status === 404) {
+      if (!response.ok) {
+        // For now: on any API error, trigger re-login flow
         this.unauthorizedHandler?.();
-        const message = response.status === 404 
-          ? 'API endpoint not found. Please check your configuration and log in again.'
-          : 'Unauthorized: Invalid or expired API token.';
-        throw new UnauthorizedError(message, response.status);
-      }
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
-    }
 
-    const data = await response.json();
-    
-    return data;
+        if (response.status === 401 || response.status === 403 || response.status === 404) {
+          const message = response.status === 404
+            ? 'API endpoint not found. Please check your configuration and log in again.'
+            : 'Unauthorized: Invalid or expired API token.';
+          throw new UnauthorizedError(message, response.status);
+        }
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      // Network or parsing error: also treat as auth/error requiring re-login
+      this.unauthorizedHandler?.();
+      throw err;
+    }
   }
 
   async getServers(): Promise<CoolifyServer[]> {
-    return this.fetchApi<CoolifyServer[]>('/servers');
+    const raw = await this.fetchApi<any>('/servers');
+    return this.normalizeArrayResponse<CoolifyServer>(raw, ['servers']);
   }
 
   async getDeployments(): Promise<CoolifyDeployment[]> {
-    return this.fetchApi<CoolifyDeployment[]>('/deployments');
+    const raw = await this.fetchApi<any>('/deployments');
+    return this.normalizeArrayResponse<CoolifyDeployment>(raw, ['deployments']);
   }
 
   async getApplications(): Promise<CoolifyApplication[]> {
-    return this.fetchApi<CoolifyApplication[]>('/applications');
+    const raw = await this.fetchApi<any>('/applications');
+    return this.normalizeArrayResponse<CoolifyApplication>(raw, ['applications', 'apps']);
   }
 
   async getServices(): Promise<CoolifyService[]> {
-    return this.fetchApi<CoolifyService[]>('/services');
+    const raw = await this.fetchApi<any>('/services');
+    return this.normalizeArrayResponse<CoolifyService>(raw, ['services']);
   }
 
   async getApplicationLogs(uuid: string, lines: number = 200): Promise<CoolifyLogs> {

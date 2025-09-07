@@ -1,17 +1,33 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { coolifyApi } from '@/services/coolifyApi';
 import { ApiConfig } from '@/types/coolify';
 
 export function ConfigScreen() {
-  const { setConfig } = useCoolify();
+  const { setConfig, config, error, clearError } = useCoolify();
   const [baseUrl, setBaseUrl] = useState('');
   const [token, setToken] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [allowSaveAnyway, setAllowSaveAnyway] = useState(false);
   const [pendingConfig, setPendingConfig] = useState<ApiConfig | null>(null);
+
+  // Prefill with cached credentials if available
+  useEffect(() => {
+    if (config) {
+      const cleanedBase = config.baseUrl.replace(/\/api\/v1$/, '');
+      setBaseUrl(cleanedBase);
+      setToken(config.token);
+    }
+  }, [config]);
+
+  // Surface global error from context
+  useEffect(() => {
+    if (error) {
+      setErrorMessage(error);
+    }
+  }, [error]);
 
   const normalizedUrl = useMemo(() => {
     // Show the endpoint we will call for testing
@@ -105,7 +121,7 @@ export function ConfigScreen() {
         {errorMessage && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{errorMessage}</Text>
-            <TouchableOpacity onPress={() => setErrorMessage(null)}>
+            <TouchableOpacity onPress={() => { setErrorMessage(null); clearError(); }}>
               <Text style={styles.errorDismiss}>Dismiss</Text>
             </TouchableOpacity>
           </View>

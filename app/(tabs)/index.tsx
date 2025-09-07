@@ -123,8 +123,10 @@ export default function DashboardScreen() {
       <View style={styles.statsContainer}>
         <View style={styles.statCard}>
           <View style={styles.cardHeader}>
-            <Server size={20} color="#6B7280" />
-            <Text style={styles.cardValue}>{String(serversUp)}</Text>
+            {[
+              <Server key="icon" size={20} color="#6B7280" />,
+              <Text key="value" style={styles.cardValue}>{String(serversUp)}</Text>
+            ]}
           </View>
           <Text style={styles.cardTitle}>Servers ({String(servers.length)})</Text>
           <Text style={styles.cardSubtitle}>{String(serversDown)} down</Text>
@@ -132,8 +134,10 @@ export default function DashboardScreen() {
         
         <View style={styles.statCard}>
           <View style={styles.cardHeader}>
-            <Smartphone size={20} color="#6B7280" />
-            <Text style={styles.cardValue}>{String(applicationsUp)}</Text>
+            {[
+              <Smartphone key="icon" size={20} color="#6B7280" />,
+              <Text key="value" style={styles.cardValue}>{String(applicationsUp)}</Text>
+            ]}
           </View>
           <Text style={styles.cardTitle}>Apps ({String(totalApplications)})</Text>
           <Text style={styles.cardSubtitle}>{String(applicationsDown)} down</Text>
@@ -141,8 +145,10 @@ export default function DashboardScreen() {
         
         <View style={styles.statCard}>
           <View style={styles.cardHeader}>
-            <Settings size={20} color="#6B7280" />
-            <Text style={styles.cardValue}>{String(servicesUp)}</Text>
+            {[
+              <Settings key="icon" size={20} color="#6B7280" />,
+              <Text key="value" style={styles.cardValue}>{String(servicesUp)}</Text>
+            ]}
           </View>
           <Text style={styles.cardTitle}>Services ({String(totalServices)})</Text>
           <Text style={styles.cardSubtitle}>{String(servicesDown)} down</Text>
