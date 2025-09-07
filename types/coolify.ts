@@ -5,8 +5,9 @@ export interface CoolifyServer {
   description?: string;
   settings: {
     is_reachable: boolean;
+    created_at?: string;
+    updated_at?: string;
   };
-  updated_at: string;
 }
 
 export interface CoolifyDeployment {

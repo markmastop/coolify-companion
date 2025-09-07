@@ -57,7 +57,7 @@ export default function ServersScreen() {
       <View style={styles.serverMeta}>
         <StatusChip status={item.settings.is_reachable ? 'up' : 'down'} size="small" />
         <Text style={styles.lastUpdate}>
-          {formatDate(item.updated_at || 'No updated_at field')}
+          {formatDate(item.settings?.created_at || 'No date available')}
         </Text>
       </View>
     </TouchableOpacity>
@@ -160,7 +160,7 @@ export default function ServersScreen() {
               
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Created</Text>
-                <Text style={styles.detailValue}>{formatDate(selectedServer.updated_at || 'No date available')}</Text>
+                <Text style={styles.detailValue}>{formatDate(selectedServer.settings?.created_at || 'No date available')}</Text>
               </View>
             </ScrollView>
           </View>
