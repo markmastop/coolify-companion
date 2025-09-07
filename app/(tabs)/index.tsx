@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatCard } from '@/components/StatCard';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyDeployment } from '@/types/coolify';
-import { Wifi } from 'lucide-react-native';
+import { Wifi, Server, Smartphone, Settings } from 'lucide-react-native';
 
 export default function DashboardScreen() {
   const { 
@@ -118,27 +118,32 @@ export default function DashboardScreen() {
       )}
 
       <View style={styles.statsContainer}>
-        <StatCard
-          title={`Servers (${String(servers.length)})`}
-          value={serversUp}
-          color="green"
-          icon="🖥️"
-          subtitle={`${String(serversDown)} down`}
-        />
-        <StatCard
-          title={`Apps (${String(totalApplications)})`}
-          value={applicationsUp}
-          color="blue"
-          icon="📱"
-          subtitle={`${String(applicationsDown)} down`}
-        />
-        <StatCard
-          title={`Services (${String(totalServices)})`}
-          value={servicesUp}
-          color="orange"
-          icon="⚙️"
-          subtitle={`${String(servicesDown)} down`}
-        />
+        <View style={styles.statCard}>
+          <View style={styles.cardHeader}>
+            <Server size={20} color="#6B7280" />
+            <Text style={styles.cardValue}>{String(serversUp)}</Text>
+          </View>
+          <Text style={styles.cardTitle}>Servers ({String(servers.length)})</Text>
+          <Text style={styles.cardSubtitle}>{String(serversDown)} down</Text>
+        </View>
+        
+        <View style={styles.statCard}>
+          <View style={styles.cardHeader}>
+            <Smartphone size={20} color="#6B7280" />
+            <Text style={styles.cardValue}>{String(applicationsUp)}</Text>
+          </View>
+          <Text style={styles.cardTitle}>Apps ({String(totalApplications)})</Text>
+          <Text style={styles.cardSubtitle}>{String(applicationsDown)} down</Text>
+        </View>
+        
+        <View style={styles.statCard}>
+          <View style={styles.cardHeader}>
+            <Settings size={20} color="#6B7280" />
+            <Text style={styles.cardValue}>{String(servicesUp)}</Text>
+          </View>
+          <Text style={styles.cardTitle}>Services ({String(totalServices)})</Text>
+          <Text style={styles.cardSubtitle}>{String(servicesDown)} down</Text>
+        </View>
       </View>
 
       <View style={styles.section}>
@@ -222,6 +227,38 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     padding: 16,
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  cardValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  cardTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B7280',
+    textAlign: 'center',
+  },
+  cardSubtitle: {
+    fontSize: 10,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginTop: 2,
   },
   section: {
     margin: 20,
