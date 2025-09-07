@@ -1,11 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyApplication } from '@/types/coolify';
 import { coolifyApi } from '@/services/coolifyApi';
-import { RefreshCw, FileText, RotateCcw } from 'lucide-react-native';
+import { FileText, RotateCcw } from 'lucide-react-native';
 
 export default function ApplicationsScreen() {
   const { 
@@ -16,6 +16,15 @@ export default function ApplicationsScreen() {
     refreshApplications,
     clearError 
   } = useCoolify();
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshApplications();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [refreshApplications]);
 
   const onRefresh = useCallback(async () => {
     clearError();
@@ -116,13 +125,6 @@ export default function ApplicationsScreen() {
     >
       <View style={styles.header}>
         <Text style={styles.title}>Applications</Text>
-        <TouchableOpacity onPress={onRefresh} disabled={isLoading}>
-          <RefreshCw 
-            size={20} 
-            color={isLoading ? '#9CA3AF' : '#6B7280'} 
-            style={{ transform: [{ rotate: isLoading ? '180deg' : '0deg' }] }}
-          />
-        </TouchableOpacity>
       </View>
 
       {error && (

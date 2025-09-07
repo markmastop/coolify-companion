@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Modal } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyServer } from '@/types/coolify';
-import { RefreshCw, X } from 'lucide-react-native';
+import { X } from 'lucide-react-native';
 
 export default function ServersScreen() {
   const { 
@@ -17,6 +17,15 @@ export default function ServersScreen() {
   } = useCoolify();
   
   const [selectedServer, setSelectedServer] = useState<CoolifyServer | null>(null);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshServers();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [refreshServers]);
 
   const onRefresh = useCallback(async () => {
     clearError();
@@ -75,13 +84,6 @@ export default function ServersScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>Servers</Text>
-          <TouchableOpacity onPress={onRefresh} disabled={isLoading}>
-            <RefreshCw 
-              size={20} 
-              color={isLoading ? '#9CA3AF' : '#6B7280'} 
-              style={{ transform: [{ rotate: isLoading ? '180deg' : '0deg' }] }}
-            />
-          </TouchableOpacity>
         </View>
 
         {error && (

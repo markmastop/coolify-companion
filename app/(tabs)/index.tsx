@@ -1,11 +1,11 @@
-import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatCard } from '@/components/StatCard';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyDeployment } from '@/types/coolify';
-import { RefreshCw, Wifi } from 'lucide-react-native';
+import { Wifi } from 'lucide-react-native';
 
 export default function DashboardScreen() {
   const { 
@@ -18,6 +18,16 @@ export default function DashboardScreen() {
     refreshServers,
     clearError 
   } = useCoolify();
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refreshServers();
+      refreshDeployments();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [refreshServers, refreshDeployments]);
 
   const onRefresh = useCallback(async () => {
     clearError();
@@ -76,13 +86,6 @@ export default function DashboardScreen() {
           <View style={styles.connectionIndicator}>
             <Wifi size={16} color="#10B981" />
           </View>
-          <TouchableOpacity onPress={onRefresh} disabled={isLoading}>
-            <RefreshCw 
-              size={20} 
-              color={isLoading ? '#9CA3AF' : '#6B7280'} 
-              style={{ transform: [{ rotate: isLoading ? '180deg' : '0deg' }] }}
-            />
-          </TouchableOpacity>
         </View>
       </View>
 
