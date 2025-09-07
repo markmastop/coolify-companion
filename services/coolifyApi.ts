@@ -103,6 +103,8 @@ class CoolifyApiService {
     }
 
     const url = `${this.config.baseUrl}${endpoint}`;
+    console.log('API Request:', url);
+    
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -110,6 +112,9 @@ class CoolifyApiService {
         ...options?.headers,
       },
     });
+
+    console.log('API Response Status:', response.status);
+    console.log('API Response Headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       if (response.status === 401 || response.status === 403 || response.status === 404) {
@@ -122,7 +127,9 @@ class CoolifyApiService {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('API Response Data:', data);
+    return data;
   }
 
   async getServers(): Promise<CoolifyServer[]> {
