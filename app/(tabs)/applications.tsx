@@ -17,7 +17,6 @@ export default function ApplicationsScreen() {
     clearError 
   } = useCoolify();
 
-  // Auto-refresh every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       refreshApplications();
@@ -36,13 +35,13 @@ export default function ApplicationsScreen() {
   }
 
   const handleViewLogs = (app: CoolifyApplication) => {
-    router.push(`/logs?uuid=${app.uuid}&name=${encodeURIComponent(app.name)}`);
+    router.push(`/logs?uuid=${String(app.uuid)}&name=${encodeURIComponent(String(app.name))}`);
   };
 
   const handleRedeploy = async (app: CoolifyApplication) => {
     Alert.alert(
       'Confirm Redeploy',
-      `Are you sure you want to redeploy "${app.name}"?`,
+      `Are you sure you want to redeploy "${String(app.name)}"?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -50,15 +49,15 @@ export default function ApplicationsScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              const result = await coolifyApi.triggerRedeploy(app.uuid);
+              const result = await coolifyApi.triggerRedeploy(String(app.uuid));
               Alert.alert(
                 'Success', 
-                result.message || 'Redeploy triggered successfully'
+                String(result.message || 'Redeploy triggered successfully')
               );
             } catch (error) {
               Alert.alert(
                 'Error',
-                `Failed to trigger redeploy: ${error instanceof Error ? error.message : 'Unknown error'}`
+                `Failed to trigger redeploy: ${error instanceof Error ? String(error.message) : 'Unknown error'}`
               );
             }
           }
@@ -68,7 +67,7 @@ export default function ApplicationsScreen() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
+    return new Date(String(dateString)).toLocaleString();
   };
 
   const renderApplicationItem = ({ item }: { item: CoolifyApplication }) => (
@@ -94,7 +93,7 @@ export default function ApplicationsScreen() {
           Status: {String(item.status)}
         </Text>
         <Text style={styles.lastUpdate}>
-          Updated: {String(formatDate(item.updated_at))}
+          Updated: {String(formatDate(String(item.updated_at)))}
         </Text>
       </View>
       <View style={styles.appActions}>
