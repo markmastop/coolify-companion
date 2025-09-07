@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
-import { StatCard } from '@/components/StatCard';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyDeployment } from '@/types/coolify';
@@ -77,10 +76,10 @@ export default function DashboardScreen() {
     <View style={styles.deploymentRow}>
       <View style={styles.deploymentInfo}>
         <Text style={styles.deploymentApp} numberOfLines={1}>
-          {item.application_name}
+          {String(item.application_name)}
         </Text>
         <Text style={styles.deploymentServer} numberOfLines={1}>
-          {item.server_name}
+          {String(item.server_name)}
         </Text>
       </View>
       <View style={styles.deploymentMeta}>
@@ -110,7 +109,7 @@ export default function DashboardScreen() {
 
       {error && (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
+          <Text style={styles.errorText}>{String(error)}</Text>
           <TouchableOpacity onPress={clearError}>
             <Text style={styles.errorDismiss}>Dismiss</Text>
           </TouchableOpacity>
@@ -160,7 +159,7 @@ export default function DashboardScreen() {
             <FlatList
               data={deployments.slice(0, 10)}
               renderItem={renderDeploymentItem}
-             keyExtractor={(item) => item.uuid}
+              keyExtractor={(item) => String(item.uuid)}
               scrollEnabled={false}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
             />
