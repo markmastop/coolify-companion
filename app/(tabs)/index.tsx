@@ -5,7 +5,7 @@ import { StatCard } from '@/components/StatCard';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyDeployment } from '@/types/coolify';
-import { RefreshCw } from 'lucide-react-native';
+import { RefreshCw, Wifi } from 'lucide-react-native';
 
 export default function DashboardScreen() {
   const { 
@@ -72,13 +72,18 @@ export default function DashboardScreen() {
     >
       <View style={styles.header}>
         <Text style={styles.title}>Coolify Monitor</Text>
-        <TouchableOpacity onPress={onRefresh} disabled={isLoading}>
-          <RefreshCw 
-            size={20} 
-            color={isLoading ? '#9CA3AF' : '#6B7280'} 
-            style={{ transform: [{ rotate: isLoading ? '180deg' : '0deg' }] }}
-          />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <View style={styles.connectionIndicator}>
+            <Wifi size={16} color="#10B981" />
+          </View>
+          <TouchableOpacity onPress={onRefresh} disabled={isLoading}>
+            <RefreshCw 
+              size={20} 
+              color={isLoading ? '#9CA3AF' : '#6B7280'} 
+              style={{ transform: [{ rotate: isLoading ? '180deg' : '0deg' }] }}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {error && (
@@ -155,6 +160,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#111827',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  connectionIndicator: {
+    backgroundColor: '#DCFCE7',
+    borderRadius: 12,
+    padding: 6,
+    borderWidth: 1,
+    borderColor: '#10B981',
   },
   errorContainer: {
     backgroundColor: '#FEE2E2',
