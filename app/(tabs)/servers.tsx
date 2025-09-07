@@ -52,21 +52,21 @@ export default function ServersScreen() {
     >
       <View style={styles.serverInfo}>
         <Text style={styles.serverName} numberOfLines={1}>
-          {item.name}
+          {String(item.name)}
         </Text>
         <Text style={styles.serverId} numberOfLines={1}>
-          ID: {item.id}
+          ID: {String(item.id)}
         </Text>
         {item.description && (
           <Text style={styles.serverDescription} numberOfLines={2}>
-            {item.description}
+            {String(item.description)}
           </Text>
         )}
       </View>
       <View style={styles.serverMeta}>
         <StatusChip status={item.settings.is_reachable ? 'up' : 'down'} size="small" />
         <Text style={styles.lastUpdate}>
-          {formatDate(item.settings?.created_at || 'No date available')}
+          {String(formatDate(item.settings?.created_at || 'No date available'))}
         </Text>
       </View>
     </TouchableOpacity>
@@ -135,7 +135,7 @@ export default function ServersScreen() {
             <ScrollView style={styles.modalContent}>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Name</Text>
-                <Text style={styles.detailValue}>{selectedServer.name}</Text>
+                <Text style={styles.detailValue}>{String(selectedServer.name)}</Text>
               </View>
               
               <View style={styles.detailRow}>
@@ -145,24 +145,24 @@ export default function ServersScreen() {
               
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>UUID</Text>
-                <Text style={styles.detailValue}>{selectedServer.uuid}</Text>
+                <Text style={styles.detailValue}>{String(selectedServer.uuid)}</Text>
               </View>
               
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>ID</Text>
-                <Text style={styles.detailValue}>{selectedServer.id}</Text>
+                <Text style={styles.detailValue}>{String(selectedServer.id)}</Text>
               </View>
               
               {selectedServer.description && (
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Description</Text>
-                  <Text style={styles.detailValue}>{selectedServer.description}</Text>
+                  <Text style={styles.detailValue}>{String(selectedServer.description)}</Text>
                 </View>
               )}
               
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Created</Text>
-                <Text style={styles.detailValue}>{formatDate(selectedServer.settings?.created_at || 'No date available')}</Text>
+                <Text style={styles.detailValue}>{String(formatDate(selectedServer.settings?.created_at || 'No date available'))}</Text>
               </View>
             </ScrollView>
           </View>
