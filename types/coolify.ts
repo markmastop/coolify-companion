@@ -42,3 +42,42 @@ export interface ApiConfig {
   baseUrl: string;
   token: string;
 }
+
+export interface CoolifyService {
+  uuid: string;
+  name: string;
+  environment_id: number;
+  created_at: string;
+  updated_at: string;
+  server_id: number;
+  description?: string;
+  service_type: string;
+  status: string;
+  server_status: boolean;
+  server: {
+    id: number;
+    uuid: string;
+    name: string;
+    description?: string;
+    ip: string;
+  };
+  applications: Array<{
+    id: number;
+    uuid: string;
+    name: string;
+    status: string;
+    fqdn?: string;
+    image: string;
+    created_at: string;
+    updated_at: string;
+  }>;
+  databases: Array<{
+    id: number;
+    uuid: string;
+    name: string;
+    status: string;
+    image: string;
+    created_at: string;
+    updated_at: string;
+  }>;
+}

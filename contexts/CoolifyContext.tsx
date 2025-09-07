@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { coolifyApi } from '@/services/coolifyApi';
-import { CoolifyServer, CoolifyDeployment, CoolifyApplication, ApiConfig } from '@/types/coolify';
+import { CoolifyServer, CoolifyDeployment, CoolifyApplication, CoolifyService, ApiConfig } from '@/types/coolify';
 
 interface CoolifyContextType {
   config: ApiConfig | null;
   servers: CoolifyServer[];
   deployments: CoolifyDeployment[];
   applications: CoolifyApplication[];
+  services: CoolifyService[];
   isLoading: boolean;
   error: string | null;
   isConfigured: boolean;
@@ -15,6 +16,7 @@ interface CoolifyContextType {
   refreshServers: () => Promise<void>;
   refreshDeployments: () => Promise<void>;
   refreshApplications: () => Promise<void>;
+  refreshServices: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -25,6 +27,7 @@ const STORAGE_KEYS = {
   SERVERS: 'coolify_servers',
   DEPLOYMENTS: 'coolify_deployments',
   APPLICATIONS: 'coolify_applications',
+  SERVICES: 'coolify_services',
 };
 
 interface CoolifyProviderProps {
@@ -36,6 +39,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
   const [servers, setServers] = useState<CoolifyServer[]>([]);
   const [deployments, setDeployments] = useState<CoolifyDeployment[]>([]);
   const [applications, setApplications] = useState<CoolifyApplication[]>([]);
+  const [services, setServices] = useState<CoolifyService[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isConfigured, setIsConfigured] = useState(false);
@@ -85,6 +89,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       const storedServers = await AsyncStorage.getItem(STORAGE_KEYS.SERVERS);
       const storedDeployments = await AsyncStorage.getItem(STORAGE_KEYS.DEPLOYMENTS);
       const storedApplications = await AsyncStorage.getItem(STORAGE_KEYS.APPLICATIONS);
+      const storedServices = await AsyncStorage.getItem(STORAGE_KEYS.SERVICES);
 
       if (storedConfig) {
         const parsedConfig = JSON.parse(storedConfig);
@@ -96,6 +101,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       if (storedServers) setServers(JSON.parse(storedServers));
       if (storedDeployments) setDeployments(JSON.parse(storedDeployments));
       if (storedApplications) setApplications(JSON.parse(storedApplications));
+      if (storedServices) setServices(JSON.parse(storedServices));
     } catch (err) {
       console.error('Failed to load stored data:', err);
     }
@@ -114,6 +120,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
         refreshServers(),
         refreshDeployments(),
         refreshApplications(),
+        refreshServices(),
       ]);
     } catch (err) {
       setError('Failed to save configuration');
@@ -169,6 +176,22 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     }
   };
 
+  const refreshServices = async () => {
+    if (!isConfigured) return;
+    
+    try {
+      setIsLoading(true);
+      const data = await coolifyApi.getServices();
+      setServices(data);
+      await AsyncStorage.setItem(STORAGE_KEYS.SERVICES, JSON.stringify(data));
+      setError(null);
+    } catch (err) {
+      setError(`Failed to fetch services: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const clearError = () => setError(null);
 
   return (
@@ -178,6 +201,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
         servers,
         deployments,
         applications,
+        services,
         isLoading,
         error,
         isConfigured,
@@ -185,6 +209,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
         refreshServers,
         refreshDeployments,
         refreshApplications,
+        refreshServices,
         clearError,
       }}
     >

@@ -141,6 +141,10 @@ class CoolifyApiService {
     return this.fetchApi<CoolifyApplication[]>('/applications');
   }
 
+  async getServices(): Promise<CoolifyService[]> {
+    return this.fetchApi<CoolifyService[]>('/services');
+  }
+
   async getApplicationLogs(uuid: string, lines: number = 200): Promise<CoolifyLogs> {
     return this.fetchApi<CoolifyLogs>(`/applications/${uuid}/logs?lines=${lines}`);
   }

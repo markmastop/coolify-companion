@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Server, Smartphone, FileText } from 'lucide-react-native';
+import { Home, Server, Smartphone, FileText, Settings } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -39,6 +39,15 @@ export default function TabLayout() {
           title: 'Applications',
           tabBarIcon: ({ size, color }) => (
             <Smartphone size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="services"
+        options={{
+          title: 'Services',
+          tabBarIcon: ({ size, color }) => (
+            <Settings size={size} color={color} />
           ),
         }}
       />

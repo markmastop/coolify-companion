@@ -11,11 +11,13 @@ export default function DashboardScreen() {
   const { 
     servers, 
     deployments, 
+    services,
     isLoading, 
     error, 
     isConfigured, 
     refreshDeployments, 
     refreshServers,
+    refreshServices,
     clearError 
   } = useCoolify();
 
@@ -24,6 +26,7 @@ export default function DashboardScreen() {
     const interval = setInterval(() => {
       refreshServers();
       refreshDeployments();
+      refreshServices();
     }, 30000);
 
     return () => clearInterval(interval);
@@ -31,8 +34,8 @@ export default function DashboardScreen() {
 
   const onRefresh = useCallback(async () => {
     clearError();
-    await Promise.all([refreshServers(), refreshDeployments()]);
-  }, [refreshServers, refreshDeployments, clearError]);
+    await Promise.all([refreshServers(), refreshDeployments(), refreshServices()]);
+  }, [refreshServers, refreshDeployments, refreshServices, clearError]);
 
   if (!isConfigured) {
     return <ConfigScreen />;
@@ -41,6 +44,7 @@ export default function DashboardScreen() {
   const serversUp = servers.filter(s => s.settings.is_reachable).length;
   const serversDown = servers.filter(s => !s.settings.is_reachable).length;
   const runningDeployments = deployments.filter(d => d.status === 'running').length;
+  const runningServices = services.filter(s => s.status.includes('running')).length;
 
   const formatTimeAgo = (dateString: string) => {
     const now = new Date();
@@ -112,8 +116,8 @@ export default function DashboardScreen() {
           icon="❌"
         />
         <StatCard
-          title="Running Deployments"
-          value={runningDeployments}
+          title="Running Services"
+          value={runningServices}
           color="blue"
           icon="🚀"
         />
