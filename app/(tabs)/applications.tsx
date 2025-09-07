@@ -129,7 +129,7 @@ export default function ApplicationsScreen() {
 
       {error && (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
+          <Text style={styles.errorText}>{String(error)}</Text>
           <TouchableOpacity onPress={clearError}>
             <Text style={styles.errorDismiss}>Dismiss</Text>
           </TouchableOpacity>
