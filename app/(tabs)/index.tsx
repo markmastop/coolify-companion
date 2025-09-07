@@ -10,6 +10,7 @@ import { Wifi } from 'lucide-react-native';
 export default function DashboardScreen() {
   const { 
     servers, 
+    applications,
     deployments, 
     services,
     isLoading, 
