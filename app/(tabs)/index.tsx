@@ -24,14 +24,18 @@ export default function DashboardScreen() {
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
+    // Deployments refresh every 10 seconds, others every 30 seconds
+    const deploymentInterval = setInterval(refreshDeployments, 10000);
+    const otherInterval = setInterval(() => {
       refreshServers();
-      refreshDeployments();
       refreshServices();
       refreshApplications();
     }, 30000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(deploymentInterval);
+      clearInterval(otherInterval);
+    };
   }, [refreshServers, refreshDeployments, refreshServices, refreshApplications]);
 
   const onRefresh = useCallback(async () => {
@@ -83,7 +87,7 @@ export default function DashboardScreen() {
         </Text>
       </View>
       <View style={styles.deploymentMeta}>
-        <StatusChip status={item.status} size="small" />
+        <StatusChip status={item.status === 'in_progress' ? 'running' : item.status} size="small" />
         <Text style={styles.deploymentTime}>
           {formatTimeAgo(item.created_at)}
         </Text>
@@ -159,7 +163,7 @@ export default function DashboardScreen() {
             <FlatList
               data={deployments.slice(0, 10)}
               renderItem={renderDeploymentItem}
-              keyExtractor={(item) => String(item.uuid)}
+              keyExtractor={(item) => String(item.deployment_uuid)}
               scrollEnabled={false}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
             />

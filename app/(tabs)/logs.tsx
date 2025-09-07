@@ -36,7 +36,7 @@ export default function LogsScreen() {
 
   // Check if this app has running deployments
   const hasRunningDeployment = deployments.some(
-    d => d.application_name === name && d.status === 'running'
+    d => d.application_name === name && d.status === 'in_progress'
   );
 
   // Handle configuration and UUID validation

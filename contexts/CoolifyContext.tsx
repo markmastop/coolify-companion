@@ -70,8 +70,8 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
   useEffect(() => {
     if (!isConfigured) return;
 
-    const hasRunningDeployments = deployments.some(d => d.status === 'running');
-    const deploymentInterval = hasRunningDeployments ? 5000 : 30000;
+    const hasRunningDeployments = deployments.some(d => d.status === 'in_progress');
+    const deploymentInterval = 10000; // Always 10 seconds for deployments
     const serverInterval = 30000;
 
     const deploymentPoller = setInterval(refreshDeployments, deploymentInterval);

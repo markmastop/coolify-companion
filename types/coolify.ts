@@ -11,13 +11,17 @@ export interface CoolifyServer {
 }
 
 export interface CoolifyDeployment {
-  id: string;
-  uuid: string;
-  application_uuid: string;
+  id: number;
+  deployment_uuid: string;
+  application_id: string;
   application_name: string;
+  server_id: number;
   server_name: string;
-  status: 'running' | 'success' | 'failed' | 'queued' | 'cancelled';
-  commit_sha?: string;
+  status: 'in_progress' | 'success' | 'failed' | 'queued' | 'cancelled';
+  commit?: string;
+  commit_message?: string;
+  deployment_url?: string;
+  finished_at?: string;
   created_at: string;
   updated_at: string;
 }
