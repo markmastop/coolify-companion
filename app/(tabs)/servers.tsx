@@ -100,7 +100,7 @@ export default function ServersScreen() {
               <FlatList
                 data={servers}
                 renderItem={renderServerItem}
-                keyExtractor={(item) => item.id}
+               keyExtractor={(item) => item.uuid}
                 scrollEnabled={false}
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
               />

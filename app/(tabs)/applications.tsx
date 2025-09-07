@@ -148,7 +148,7 @@ export default function ApplicationsScreen() {
             <FlatList
               data={applications}
               renderItem={renderApplicationItem}
-              keyExtractor={(item) => item.id}
+             keyExtractor={(item) => item.uuid}
               scrollEnabled={false}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
             />

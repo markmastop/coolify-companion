@@ -130,7 +130,7 @@ export default function DashboardScreen() {
             <FlatList
               data={deployments.slice(0, 10)}
               renderItem={renderDeploymentItem}
-              keyExtractor={(item) => item.id}
+             keyExtractor={(item) => item.uuid}
               scrollEnabled={false}
               ItemSeparatorComponent={() => <View style={styles.separator} />}
             />
