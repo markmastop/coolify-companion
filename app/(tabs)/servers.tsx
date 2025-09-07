@@ -55,7 +55,7 @@ export default function ServersScreen() {
       <View style={styles.serverMeta}>
         <StatusChip status={item.settings.is_reachable ? 'up' : 'down'} size="small" />
         <Text style={styles.lastUpdate}>
-          {formatDate(item.created_at)}
+          {formatDate(item.updated_at)}
         </Text>
       </View>
     </TouchableOpacity>
