@@ -36,9 +36,8 @@ class CoolifyApiService {
   // Validate a provided config by pinging a simple endpoint
   async testConnection(config: ApiConfig): Promise<{ ok: boolean; status?: number; message: string }> {
     try {
-      // Use the servers endpoint under /api/v1 for validation
-      const apiBase = `${config.baseUrl}`.replace(/\/+$/, '');
-      const url = `${apiBase}/servers`;
+      // Use the servers endpoint for validation - config.baseUrl should already include /api/v1
+      const url = `${config.baseUrl}/servers`;
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${config.token}`,

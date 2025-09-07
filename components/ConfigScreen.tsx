@@ -14,11 +14,9 @@ export function ConfigScreen() {
   const [pendingConfig, setPendingConfig] = useState<ApiConfig | null>(null);
 
   const normalizedUrl = useMemo(() => {
-    // Show the endpoint we will call for testing: /api/v1/servers
+    // Show the endpoint we will call for testing
     const clean = baseUrl.trim().replace(/\/+$/, '');
     if (!clean) return '';
-    if (clean.endsWith('/api/v1')) return `${clean}/servers`;
-    if (clean.endsWith('/api')) return `${clean}/v1/servers`;
     return `${clean}/api/v1/servers`;
   }, [baseUrl]);
 
@@ -29,12 +27,8 @@ export function ConfigScreen() {
     }
 
     const cleanUrl = baseUrl.trim().replace(/\/+$/, '');
-    // Ensure "/api/v1" (handle if user provided "/api")
-    const fullUrl = cleanUrl.endsWith('/api/v1')
-      ? cleanUrl
-      : cleanUrl.endsWith('/api')
-        ? `${cleanUrl}/v1`
-        : `${cleanUrl}/api/v1`;
+    // Always append /api/v1 to the base URL
+    const fullUrl = `${cleanUrl}/api/v1`;
 
     setIsLoading(true);
     try {
