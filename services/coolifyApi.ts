@@ -114,9 +114,12 @@ class CoolifyApiService {
     });
 
     if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
+      if (response.status === 401 || response.status === 403 || response.status === 404) {
         this.unauthorizedHandler?.();
-        throw new UnauthorizedError('Unauthorized: Invalid or expired API token.', response.status);
+        const message = response.status === 404 
+          ? 'API endpoint not found. Please check your configuration and log in again.'
+          : 'Unauthorized: Invalid or expired API token.';
+        throw new UnauthorizedError(message, response.status);
       }
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }

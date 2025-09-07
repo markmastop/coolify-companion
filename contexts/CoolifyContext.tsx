@@ -58,7 +58,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       setDeployments([]);
       setApplications([]);
       setIsConfigured(false);
-      setError('Your session has expired or the API token is invalid. Please log in again.');
+      setError('Connection error or invalid configuration. Please log in again.');
     });
   }, []);
 
