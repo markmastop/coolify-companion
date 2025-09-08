@@ -192,67 +192,76 @@ export default function DashboardScreen() {
 
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
-            <View style={styles.cardRow}>
-              <View style={styles.iconContainer}>
+            <View style={styles.cardTopRow}>
+              <View style={styles.iconTop}>
                 <Server size={20} color={serversIconColor} strokeWidth={2.5} />
               </View>
-              <View style={styles.cardContent}>
-                <View style={styles.cardTopRow}>
-                  <Text style={styles.cardTitle} numberOfLines={1}>Servers</Text>
-                  <Text style={styles.cardValue}>{String(serversUp)}</Text>
-                </View>
-                <Text style={styles.cardTotal} numberOfLines={1}>{String(servers.length)} total</Text>
-                <Text style={styles.cardSubtitle} numberOfLines={1}>{String(serversDown)} down</Text>
-              </View>
+              <Text style={styles.cardValue}>{String(serversUp)}</Text>
             </View>
+            <Text style={styles.cardTitle} numberOfLines={1}>Servers</Text>
+            <Text style={styles.cardMeta} numberOfLines={1}>{String(servers.length)} total</Text>
+            <Text
+              style={[
+                styles.cardMeta,
+                serversDown > 0 ? styles.cardDownDanger : styles.cardDownOk,
+              ]}
+              numberOfLines={1}
+            >
+              {serversDown > 0 ? `${String(serversDown)} down` : 'All up'}
+            </Text>
           </View>
 
           <View style={styles.statCard}>
-            <View style={styles.cardRow}>
-              <View style={styles.iconContainer}>
+            <View style={styles.cardTopRow}>
+              <View style={styles.iconTop}>
                 <Smartphone size={20} color={appsIconColor} strokeWidth={2.5} />
               </View>
-              <View style={styles.cardContent}>
-                <View style={styles.cardTopRow}>
-                  <Text style={styles.cardTitle} numberOfLines={1}>Applications</Text>
-                  <Text style={styles.cardValue}>{String(applicationsUp)}</Text>
-                </View>
-                <Text style={styles.cardTotal} numberOfLines={1}>{String(totalApplications)} total</Text>
-                <Text style={styles.cardSubtitle} numberOfLines={1}>{String(applicationsDown)} down</Text>
-              </View>
+              <Text style={styles.cardValue}>{String(applicationsUp)}</Text>
             </View>
+            <Text style={styles.cardTitle} numberOfLines={1}>Applications</Text>
+            <Text style={styles.cardMeta} numberOfLines={1}>{String(totalApplications)} total</Text>
+            <Text
+              style={[
+                styles.cardMeta,
+                applicationsDown > 0 ? styles.cardDownDanger : styles.cardDownOk,
+              ]}
+              numberOfLines={1}
+            >
+              {applicationsDown > 0 ? `${String(applicationsDown)} down` : 'All up'}
+            </Text>
           </View>
 
           <View style={styles.statCard}>
-            <View style={styles.cardRow}>
-              <View style={styles.iconContainer}>
+            <View style={styles.cardTopRow}>
+              <View style={styles.iconTop}>
                 <Settings size={20} color={servicesIconColor} strokeWidth={2.5} />
               </View>
-              <View style={styles.cardContent}>
-                <View style={styles.cardTopRow}>
-                  <Text style={styles.cardTitle} numberOfLines={1}>Services</Text>
-                  <Text style={styles.cardValue}>{String(servicesUp)}</Text>
-                </View>
-                <Text style={styles.cardTotal} numberOfLines={1}>{String(totalServices)} total</Text>
-                <Text style={styles.cardSubtitle} numberOfLines={1}>{String(servicesDown)} down</Text>
-              </View>
+              <Text style={styles.cardValue}>{String(servicesUp)}</Text>
             </View>
+            <Text style={styles.cardTitle} numberOfLines={1}>Services</Text>
+            <Text style={styles.cardMeta} numberOfLines={1}>{String(totalServices)} total</Text>
+            <Text
+              style={[
+                styles.cardMeta,
+                servicesDown > 0 ? styles.cardDownDanger : styles.cardDownOk,
+              ]}
+              numberOfLines={1}
+            >
+              {servicesDown > 0 ? `${String(servicesDown)} down` : 'All up'}
+            </Text>
           </View>
         </View>
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Deployments</Text>
+            <Text style={styles.sectionTitle}>Running Deployments</Text>
             <View style={styles.sectionBadge}>
               <Text style={styles.sectionBadgeText}>{deployments.length}</Text>
             </View>
           </View>
           {deployments.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>No deployments found</Text>
-              <Text style={styles.emptyStateSubtext}>
-                Pull to refresh or check your connection
-              </Text>
+              <Text style={styles.emptyStateText}>No deployments found yet. Any deployments planned?</Text>
             </View>
           ) : (
             <View style={styles.deploymentsContainer}>
@@ -372,57 +381,93 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    padding: 24,
-    gap: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    gap: 12,
   },
   statCard: {
     flex: 1,
-    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF',
-    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
-    borderRadius: 20,
-    padding: 20,
-    borderWidth: 0,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 20,
-    elevation: 5,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
   },
   cardHeader: {
+    display: 'none',
+  },
+  cardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    backgroundColor: 'transparent',
+  },
+  cardContent: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  cardTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 4,
   },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
+  iconTop: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
   cardValue: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '800',
     color: '#111827',
-    letterSpacing: -1,
+    letterSpacing: -0.5,
   },
   cardTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
-    color: '#374151',
-    marginBottom: 2,
+    color: '#111827',
+    marginBottom: 0,
   },
   cardTotal: {
     fontSize: 12,
     fontWeight: '500',
     color: '#64748B',
-    marginBottom: 4,
+    marginBottom: 0,
   },
   cardSubtitle: {
     fontSize: 11,
     color: '#94A3B8',
     fontWeight: '500',
+  },
+  cardMeta: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#64748B',
+  },
+  cardDownDanger: {
+    color: '#B91C1C',
+    fontWeight: '700',
+  },
+  cardDownOk: {
+    color: '#065F46',
+    fontWeight: '700',
   },
   section: {
     margin: 24,
