@@ -154,7 +154,7 @@ export default function DashboardScreen() {
         <View style={styles.headerContent}>
           <View style={styles.titleSection}>
             <Text style={styles.title}>Coolify Companion</Text>
-            <Text style={styles.subtitle}>Infrastructure at a glance</Text>
+            <Text style={styles.subtitle}>Your infrastructure at a glance!</Text>
           </View>
         </View>
         <View style={styles.headerActions}>
@@ -172,16 +172,6 @@ export default function DashboardScreen() {
           <View style={styles.versionContent}>
             <TrendingUp size={14} color="#6366F1" />
             <Text style={styles.versionText}>Version {String(version)}</Text>
-          </View>
-        </View>
-      ) : null}
-      {longestUptimeServer ? (
-        <View style={styles.versionBar}>
-          <View style={styles.versionContent}>
-            <Server size={14} color="#10B981" />
-            <Text style={styles.versionText}>
-              {String(longestUptimeServer.server.name)} • {formatDuration(longestUptimeServer.secs)} uptime
-            </Text>
           </View>
         </View>
       ) : null}
@@ -203,7 +193,7 @@ export default function DashboardScreen() {
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
             <View style={styles.cardRow}>
-              <View style={[styles.iconContainer, { backgroundColor: `${serversIconColor}15` }]}>
+              <View style={styles.iconContainer}>
                 <Server size={20} color={serversIconColor} strokeWidth={2.5} />
               </View>
               <View style={styles.cardContent}>
@@ -219,7 +209,7 @@ export default function DashboardScreen() {
 
           <View style={styles.statCard}>
             <View style={styles.cardRow}>
-              <View style={[styles.iconContainer, { backgroundColor: `${appsIconColor}15` }]}>
+              <View style={styles.iconContainer}>
                 <Smartphone size={20} color={appsIconColor} strokeWidth={2.5} />
               </View>
               <View style={styles.cardContent}>
@@ -235,7 +225,7 @@ export default function DashboardScreen() {
 
           <View style={styles.statCard}>
             <View style={styles.cardRow}>
-              <View style={[styles.iconContainer, { backgroundColor: `${servicesIconColor}15` }]}>
+              <View style={styles.iconContainer}>
                 <Settings size={20} color={servicesIconColor} strokeWidth={2.5} />
               </View>
               <View style={styles.cardContent}>
