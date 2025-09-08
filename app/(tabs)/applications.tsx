@@ -166,50 +166,73 @@ export default function ApplicationsScreen() {
     />
   );
 
+  // Header stats
+  const totalApps = applications.length;
+  const appsRunning = applications.filter(app => {
+    const raw = String(app.status || '').toLowerCase();
+    const [primary] = raw.split(':');
+    return primary.includes('running');
+  }).length;
+  const appsDown = Math.max(0, totalApps - appsRunning);
+  const appsWithDomain = applications.filter(app => !!(app as any)?.fqdn).length;
+  const appsWithHealth = applications.filter(app => (app as any)?.health_check_enabled === true).length;
+
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
-      }
-    >
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Applications</Text>
-      </View>
-
-      {error && (
-        <View style={styles.errorContainer}>
-          {[
-            <Text key="msg" style={styles.errorText}>{String(error)}</Text>,
-            <TouchableOpacity key="btn" onPress={clearError}>
-              <Text style={styles.errorDismiss}>Dismiss</Text>
-            </TouchableOpacity>
-          ]}
+        <Text style={styles.headerSummary}>
+          {String(totalApps)} total • {String(appsRunning)} running • {String(appsDown)} stopped • {String(appsWithDomain)} domains • {String(appsWithHealth)} health checks
+        </Text>
+        <View style={styles.progressContainer}>
+          <View
+            style={[
+              styles.progressFill,
+              {
+                width: `${Math.round((appsRunning / Math.max(totalApps || 1, 1)) * 100)}%`,
+                backgroundColor: appsDown > 0 ? '#F59E0B' : '#10B981',
+              },
+            ]}
+          />
         </View>
-      )}
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>All Applications ({String(applications.length)})</Text>
-        {applications.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No applications found</Text>
-            <Text style={styles.emptyStateSubtext}>
-              Pull to refresh or check your connection
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.applicationsContainer}>
-            <FlatList
-              data={applications}
-              renderItem={renderApplicationItem}
-              keyExtractor={(item) => String(item.uuid)}
-              scrollEnabled={false}
-              ItemSeparatorComponent={() => <View style={styles.separator} />}
-            />
+      </View>
+      <ScrollView
+        style={{ flex: 1 }}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={onRefresh} />}
+      >
+        {error && (
+          <View style={styles.errorContainer}>
+            {[
+              <Text key="msg" style={styles.errorText}>{String(error)}</Text>,
+              <TouchableOpacity key="btn" onPress={clearError}>
+                <Text style={styles.errorDismiss}>Dismiss</Text>
+              </TouchableOpacity>
+            ]}
           </View>
         )}
-      </View>
-    </ScrollView>
+
+        <View style={styles.section}>
+          {applications.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No applications found</Text>
+              <Text style={styles.emptyStateSubtext}>
+                Pull to refresh or check your connection
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.applicationsContainer}>
+              <FlatList
+                data={applications}
+                renderItem={renderApplicationItem}
+                keyExtractor={(item) => String(item.uuid)}
+                scrollEnabled={false}
+                ItemSeparatorComponent={() => <View style={styles.separator} />}
+              />
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -232,6 +255,22 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#111827',
+  },
+  headerSummary: {
+    marginTop: 6,
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  progressContainer: {
+    marginTop: 8,
+    height: 6,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 9999,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 9999,
   },
   headerActions: {
     flexDirection: 'row',
@@ -269,12 +308,7 @@ const styles = StyleSheet.create({
   section: {
     margin: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 16,
-  },
+  sectionTitle: {},
   applicationsContainer: {
     backgroundColor: '#FFFFFF',
     borderRadius: 8,

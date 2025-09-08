@@ -137,13 +137,6 @@ export default function DashboardScreen() {
           {String(item.server_name)}
         </Text>
       </View>
-      {longestUptimeServer ? (
-        <View style={styles.versionBar}>
-          <Text style={styles.versionText}>
-            Longest uptime: {String(longestUptimeServer.server.name)} — {formatDuration(longestUptimeServer.secs)}
-          </Text>
-        </View>
-      ) : null}
       <View style={styles.deploymentMeta}>
         {[
           <StatusChip key="chip" status={item.status === 'in_progress' ? 'running' : item.status} size="small" />,
@@ -156,15 +149,10 @@ export default function DashboardScreen() {
   );
 
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
-      }
-    >
-        <View style={styles.header}>
-          <Text style={styles.title}>Coolify Companion</Text>
-          <View style={styles.headerActions}>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Coolify Companion</Text>
+        <View style={styles.headerActions}>
           <View style={[styles.connectionIndicator, (refreshingServers || refreshingApplications || refreshingServices) && styles.connectionIndicatorRefreshing]}>
             {refreshingServers || refreshingApplications || refreshingServices ? (
               <RefreshCcw size={16} color="#2563EB" />
@@ -179,75 +167,86 @@ export default function DashboardScreen() {
           <Text style={styles.versionText}>Version: {String(version)}</Text>
         </View>
       ) : null}
-
-      {error && (
-        <View style={styles.errorContainer}>
-          {[
-            <Text key="msg" style={styles.errorText}>{String(error)}</Text>,
-            <TouchableOpacity key="btn" onPress={clearError}>
-              <Text style={styles.errorDismiss}>Dismiss</Text>
-            </TouchableOpacity>
-          ]}
+      {longestUptimeServer ? (
+        <View style={styles.versionBar}>
+          <Text style={styles.versionText}>
+            Longest uptime: {String(longestUptimeServer.server.name)} — {formatDuration(longestUptimeServer.secs)}
+          </Text>
         </View>
-      )}
-
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <View style={styles.cardHeader}>
+      ) : null}
+      <ScrollView
+        style={{ flex: 1 }}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={onRefresh} />}
+      >
+        {error && (
+          <View style={styles.errorContainer}>
             {[
-              <Server key="icon" size={20} color={serversIconColor} />,
-              <Text key="value" style={styles.cardValue}>{String(serversUp)}</Text>
+              <Text key="msg" style={styles.errorText}>{String(error)}</Text>,
+              <TouchableOpacity key="btn" onPress={clearError}>
+                <Text style={styles.errorDismiss}>Dismiss</Text>
+              </TouchableOpacity>
             ]}
-          </View>
-          <Text style={styles.cardTitle}>{String(servers.length)} Servers</Text>
-          <Text style={styles.cardSubtitle}>{String(serversDown)} down</Text>
-        </View>
-        
-        <View style={styles.statCard}>
-          <View style={styles.cardHeader}>
-            {[
-              <Smartphone key="icon" size={20} color={appsIconColor} />,
-              <Text key="value" style={styles.cardValue}>{String(applicationsUp)}</Text>
-            ]}
-          </View>
-          <Text style={styles.cardTitle}>{String(totalApplications)} Apps</Text>
-          <Text style={styles.cardSubtitle}>{String(applicationsDown)} down</Text>
-        </View>
-        
-        <View style={styles.statCard}>
-          <View style={styles.cardHeader}>
-            {[
-              <Settings key="icon" size={20} color={servicesIconColor} />,
-              <Text key="value" style={styles.cardValue}>{String(servicesUp)}</Text>
-            ]}
-          </View>
-          <Text style={styles.cardTitle}>{String(totalServices)} Services</Text>
-          <Text style={styles.cardSubtitle}>{String(servicesDown)} down</Text>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Recent Deployments</Text>
-        {deployments.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No deployments found</Text>
-            <Text style={styles.emptyStateSubtext}>
-              Pull to refresh or check your connection
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.deploymentsContainer}>
-            <FlatList
-              data={deployments.slice(0, 10)}
-              renderItem={renderDeploymentItem}
-              keyExtractor={(item) => String(item.deployment_uuid)}
-              scrollEnabled={false}
-              ItemSeparatorComponent={() => <View style={styles.separator} />}
-            />
           </View>
         )}
-      </View>
-    </ScrollView>
+
+        <View style={styles.statsContainer}>
+          <View style={styles.statCard}>
+            <View style={styles.cardHeader}>
+              {[
+                <Server key="icon" size={20} color={serversIconColor} />,
+                <Text key="value" style={styles.cardValue}>{String(serversUp)}</Text>
+              ]}
+            </View>
+            <Text style={styles.cardTitle}>{String(servers.length)} Servers</Text>
+            <Text style={styles.cardSubtitle}>{String(serversDown)} down</Text>
+          </View>
+          
+          <View style={styles.statCard}>
+            <View style={styles.cardHeader}>
+              {[
+                <Smartphone key="icon" size={20} color={appsIconColor} />,
+                <Text key="value" style={styles.cardValue}>{String(applicationsUp)}</Text>
+              ]}
+            </View>
+            <Text style={styles.cardTitle}>{String(totalApplications)} Apps</Text>
+            <Text style={styles.cardSubtitle}>{String(applicationsDown)} down</Text>
+          </View>
+          
+          <View style={styles.statCard}>
+            <View style={styles.cardHeader}>
+              {[
+                <Settings key="icon" size={20} color={servicesIconColor} />,
+                <Text key="value" style={styles.cardValue}>{String(servicesUp)}</Text>
+              ]}
+            </View>
+            <Text style={styles.cardTitle}>{String(totalServices)} Services</Text>
+            <Text style={styles.cardSubtitle}>{String(servicesDown)} down</Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Recent Deployments</Text>
+          {deployments.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No deployments found</Text>
+              <Text style={styles.emptyStateSubtext}>
+                Pull to refresh or check your connection
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.deploymentsContainer}>
+              <FlatList
+                data={deployments.slice(0, 10)}
+                renderItem={renderDeploymentItem}
+                keyExtractor={(item) => String(item.deployment_uuid)}
+                scrollEnabled={false}
+                ItemSeparatorComponent={() => <View style={styles.separator} />}
+              />
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 

@@ -1,12 +1,13 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Modal, Alert } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
-//
+import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyServer } from '@/types/coolify';
 import { X, Cpu, Globe, Info, RefreshCw, ExternalLink, SquarePlay, SquareDot } from 'lucide-react-native';
 import { ListItem } from '@/components/ListItem';
 import { normalizeStatus } from '@/utils/status';
+import { formatDate } from '@/utils/format';
 
 export default function ServersScreen() {
   const { 
@@ -38,6 +39,13 @@ export default function ServersScreen() {
   if (!isConfigured) {
     return <ConfigScreen />;
   }
+
+  // Header stats
+  const totalServers = servers.length;
+  const upServers = servers.filter(s => (s as any)?.settings?.is_reachable === true || (s as any)?.is_reachable === true).length;
+  const downServers = Math.max(0, totalServers - upServers);
+  const tunnelServers = servers.filter(s => (s as any)?.settings?.is_cloudflare_tunnel === true).length;
+  const buildSlots = servers.reduce((sum, s) => sum + (Number((s as any)?.settings?.concurrent_builds) || 0), 0);
 
   const renderServerItem = ({ item }: { item: CoolifyServer }) => {
     const serverServices = services.filter(s => {
@@ -103,16 +111,27 @@ export default function ServersScreen() {
 
   return (
     <>
-      <ScrollView 
-        style={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
-        }
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>Servers</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Servers</Text>
+        <Text style={styles.headerSummary}>
+          {String(totalServers)} total • {String(upServers)} up • {String(downServers)} down • {String(tunnelServers)} tunnels • {String(buildSlots)} slots
+        </Text>
+        <View style={styles.progressContainer}>
+          <View
+            style={[
+              styles.progressFill,
+              {
+                width: `${Math.round((upServers / Math.max(totalServers || 1, 1)) * 100)}%`,
+                backgroundColor: downServers > 0 ? '#F59E0B' : '#10B981',
+              },
+            ]}
+          />
         </View>
-
+      </View>
+      <ScrollView
+        style={styles.container}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={onRefresh} />}
+      >
         {error && (
           <View style={styles.errorContainer}>
             {[
@@ -125,7 +144,6 @@ export default function ServersScreen() {
         )}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>All Servers ({servers.length})</Text>
           {servers.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateText}>No servers found</Text>
@@ -221,6 +239,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#111827',
   },
+  headerSummary: {
+    marginTop: 6,
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  progressContainer: {
+    marginTop: 8,
+    height: 6,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 9999,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 9999,
+  },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -257,12 +291,7 @@ const styles = StyleSheet.create({
   section: {
     margin: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 16,
-  },
+  sectionTitle: {},
   serversContainer: {
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
