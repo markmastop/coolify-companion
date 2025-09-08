@@ -2,6 +2,8 @@
 
 A mobile companion app for Coolify, built with Expo and React Native. This allows administrators to quickly get insights into servers, applications, and deployments on the go.
 
+Note: This app is built entirely with Vibe Coding.
+
 ## Live Demo
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-coolify--companion.expo.app-3B82F6?style=for-the-badge)](https://coolify-companion.expo.app)
