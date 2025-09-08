@@ -110,7 +110,7 @@ export default function ServersScreen() {
   const sortedServers = [...servers].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Servers</Text>
         <Text style={styles.headerSummary}>
@@ -129,7 +129,7 @@ export default function ServersScreen() {
         </View>
       </View>
       <ScrollView
-        style={styles.container}
+        style={{ flex: 1 }}
         refreshControl={<RefreshControl refreshing={isLoading} onRefresh={onRefresh} />}
       >
         {error && (
@@ -215,68 +215,69 @@ export default function ServersScreen() {
           </View>
         )}
       </Modal>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FAFBFC',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    padding: 24,
+    paddingTop: Platform.OS === 'ios' ? 64 : 44,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.85)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderBottomWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '800',
     color: '#111827',
+    letterSpacing: -0.5,
+    marginBottom: 4,
   },
   headerSummary: {
-    marginTop: 6,
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: 14,
+    color: '#64748B',
+    fontWeight: '500',
+    marginBottom: 12,
   },
   progressContainer: {
-    marginTop: 8,
-    height: 6,
+    height: 8,
     backgroundColor: '#E5E7EB',
-    borderRadius: 9999,
+    borderRadius: 12,
     overflow: 'hidden',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   progressFill: {
     height: '100%',
-    borderRadius: 9999,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  connectionIndicator: {
-    backgroundColor: '#DCFCE7',
     borderRadius: 12,
-    padding: 6,
-    borderWidth: 1,
-    borderColor: '#10B981',
   },
   errorContainer: {
     backgroundColor: '#FEE2E2',
-    borderColor: '#FECACA',
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    margin: 20,
+    borderRadius: 16,
+    padding: 16,
+    margin: 24,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderWidth: 0,
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   errorText: {
     color: '#DC2626',
@@ -286,63 +287,62 @@ const styles = StyleSheet.create({
   errorDismiss: {
     color: '#DC2626',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   section: {
-    margin: 20,
+    margin: 24,
   },
-  sectionTitle: {},
   serversContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    paddingVertical: 8,
-  },
-  serverRow: {},
-  serverInfo: {
-    flex: 1,
-  },
-  serverName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 2,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderRadius: 20,
+    paddingVertical: 12,
+    borderWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
   },
   serverId: {
     fontSize: 11,
-    color: '#6B7280',
+    color: '#64748B',
     marginBottom: 2,
+    fontWeight: '500',
   },
   serverDescription: {
     fontSize: 12,
-    color: '#6B7280',
-  },
-  serverMeta: {
-    alignItems: 'flex-end',
-  },
-  lastUpdate: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    marginTop: 4,
+    color: '#64748B',
+    fontWeight: '500',
   },
   separator: {
     height: 1,
-    backgroundColor: '#F3F4F6',
-    marginHorizontal: 16,
+    backgroundColor: '#F1F5F9',
+    marginHorizontal: 20,
   },
   emptyState: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 40,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderRadius: 20,
+    padding: 48,
     alignItems: 'center',
+    borderWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
   },
   emptyStateText: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 4,
+    fontSize: 17,
+    color: '#64748B',
+    marginBottom: 8,
+    fontWeight: '600',
   },
   emptyStateSubtext: {
-    fontSize: 14,
-    color: '#9CA3AF',
+    fontSize: 13,
+    color: '#94A3B8',
+    fontWeight: '500',
   },
   modalContainer: {
     flex: 1,
@@ -352,31 +352,53 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    padding: 24,
+    paddingTop: Platform.OS === 'ios' ? 64 : 44,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.95)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderBottomWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '800',
     color: '#111827',
+    letterSpacing: -0.3,
   },
   modalContent: {
     flex: 1,
-    padding: 20,
+    padding: 24,
   },
   detailRow: {
-    marginBottom: 20,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(248, 250, 252, 0.8)' : '#F8FAFC',
+    backdropFilter: Platform.OS === 'web' ? 'blur(10px)' : undefined,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 1,
   },
   detailLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6B7280',
-    marginBottom: 4,
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#64748B',
+    marginBottom: 6,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   detailValue: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#111827',
+    fontWeight: '600',
+    letterSpacing: -0.1,
   },
+  serverRow: {},
 });
