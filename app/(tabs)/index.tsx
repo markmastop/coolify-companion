@@ -70,9 +70,9 @@ export default function DashboardScreen() {
   }).length;
   const servicesDown = totalServices - servicesUp;
 
-  const serversIconColor = serversDown > 0 ? '#F59E0B' : '#6B7280';
-  const appsIconColor = applicationsDown > 0 ? '#F59E0B' : '#6B7280';
-  const servicesIconColor = servicesDown > 0 ? '#F59E0B' : '#6B7280';
+  const serversIconColor = serversDown > 0 ? '#F59E0B' : '#10B981';
+  const appsIconColor = applicationsDown > 0 ? '#F59E0B' : '#10B981';
+  const servicesIconColor = servicesDown > 0 ? '#F59E0B' : '#10B981';
 
   const formatTimeAgo = (dateString: string) => {
     const now = new Date();

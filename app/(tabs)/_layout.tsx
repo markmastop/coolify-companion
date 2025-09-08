@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Server, Smartphone, FileText, Settings } from 'lucide-react-native';
+import { LayoutDashboard, Server, Smartphone, FileText, Settings } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -20,7 +20,7 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ size, color }) => (
-            <Home size={size} color={color} />
+            <LayoutDashboard size={size} color={color} />
           ),
         }}
       />
