@@ -64,10 +64,16 @@ export default function DashboardScreen() {
   
   // Services stats  
   const totalServices = services.length;
-  const servicesUp = services.filter(service => 
-    service.status && service.status.includes('running') && service.status.includes('healthy')
-  ).length;
+  const servicesUp = services.filter(service => {
+    const raw = String(service.status || '').toLowerCase();
+    const [primary, secondary] = raw.split(':');
+    return primary.includes('running') && (secondary ? secondary.includes('healthy') : true);
+  }).length;
   const servicesDown = totalServices - servicesUp;
+
+  const serversIconColor = serversDown > 0 ? '#F59E0B' : '#6B7280';
+  const appsIconColor = applicationsDown > 0 ? '#F59E0B' : '#6B7280';
+  const servicesIconColor = servicesDown > 0 ? '#F59E0B' : '#6B7280';
 
   const formatTimeAgo = (dateString: string) => {
     const now = new Date();
@@ -137,7 +143,7 @@ export default function DashboardScreen() {
         <View style={styles.statCard}>
           <View style={styles.cardHeader}>
             {[
-              <Server key="icon" size={20} color="#6B7280" />,
+              <Server key="icon" size={20} color={serversIconColor} />,
               <Text key="value" style={styles.cardValue}>{String(serversUp)}</Text>
             ]}
           </View>
@@ -148,7 +154,7 @@ export default function DashboardScreen() {
         <View style={styles.statCard}>
           <View style={styles.cardHeader}>
             {[
-              <Smartphone key="icon" size={20} color="#6B7280" />,
+              <Smartphone key="icon" size={20} color={appsIconColor} />,
               <Text key="value" style={styles.cardValue}>{String(applicationsUp)}</Text>
             ]}
           </View>
@@ -159,7 +165,7 @@ export default function DashboardScreen() {
         <View style={styles.statCard}>
           <View style={styles.cardHeader}>
             {[
-              <Settings key="icon" size={20} color="#6B7280" />,
+              <Settings key="icon" size={20} color={servicesIconColor} />,
               <Text key="value" style={styles.cardValue}>{String(servicesUp)}</Text>
             ]}
           </View>

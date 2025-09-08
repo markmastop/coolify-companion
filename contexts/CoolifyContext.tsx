@@ -172,6 +172,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     try {
       setIsLoading(true);
       const data = await coolifyApi.getDeployments();
+      console.log('Deployments API Response:', data);
       setDeployments(data);
       await AsyncStorage.setItem(STORAGE_KEYS.DEPLOYMENTS, JSON.stringify(data));
       setError(null);
