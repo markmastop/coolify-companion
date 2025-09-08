@@ -130,13 +130,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: '#111827',
     marginBottom: 2,
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#6B7280',
     marginBottom: 2,
   },

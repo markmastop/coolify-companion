@@ -25,10 +25,9 @@ export default function DashboardScreen() {
     clearError 
   } = useCoolify();
 
-  // Auto-refresh every 30 seconds
+  // Auto-refresh: deployments every 15s; others every 30s
   useEffect(() => {
-    // Deployments refresh every 10 seconds, others every 30 seconds
-    const deploymentInterval = setInterval(refreshDeployments, 10000);
+    const deploymentInterval = setInterval(refreshDeployments, 15000);
     const otherInterval = setInterval(() => {
       refreshServers();
       refreshServices();

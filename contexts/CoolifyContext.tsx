@@ -67,7 +67,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
   useEffect(() => {
     if (!isConfigured) return;
 
-    const deploymentInterval = 5000; // deployments every 5s
+    const deploymentInterval = 15000; // deployments every 15s
     const commonInterval = 30000; // servers/apps/services every 30s
 
     const deploymentPoller = setInterval(refreshDeployments, deploymentInterval);

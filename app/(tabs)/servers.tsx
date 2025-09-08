@@ -40,14 +40,18 @@ export default function ServersScreen() {
   }
 
   const renderServerItem = ({ item }: { item: CoolifyServer }) => {
-    const serverServices = services.filter(s => String(s.server.uuid) === String(item.uuid));
+    const serverServices = services.filter(s => {
+      const srvUuid = (s as any)?.server?.uuid;
+      const srvId = (s as any)?.server?.id ?? (s as any)?.server_id;
+      return String(srvUuid || srvId) === String(item.uuid) || String(srvId) === String(item.id);
+    });
     const hasAnyService = serverServices.length > 0;
     const statusStr = (txt: string | undefined) => String(txt || '').toLowerCase();
     const hasUnhealthy = serverServices.some(s => {
-      const v = statusStr(s.status);
+      const v = statusStr((s as any)?.status);
       return v.includes('unhealthy') || v.includes('fail') || v.includes('error');
     });
-    const hasFqdn = serverServices.some(s => s.applications.some(a => !!a.fqdn));
+    const hasFqdn = serverServices.some(s => Array.isArray((s as any)?.applications) && (s as any).applications.some((a: any) => !!a?.fqdn));
 
     const cpuColor = hasUnhealthy ? '#F59E0B' : (hasAnyService && item.settings?.is_reachable ? '#10B981' : '#9CA3AF');
     const globeColor = item.settings?.is_reachable ? (hasFqdn ? '#0EA5E9' : '#6B7280') : '#9CA3AF';
@@ -275,12 +279,12 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   serverId: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#6B7280',
     marginBottom: 2,
   },
   serverDescription: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#6B7280',
   },
   serverMeta: {

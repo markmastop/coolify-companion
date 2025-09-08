@@ -257,12 +257,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   appDescription: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#6B7280',
     marginBottom: 4,
   },
   appRepo: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#3B82F6',
     marginBottom: 4,
   },
