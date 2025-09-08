@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Platform } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyDeployment } from '@/types/coolify';
-import { PlugZap, Server, Smartphone, Settings, RefreshCcw } from 'lucide-react-native';
+import { PlugZap, Server, Smartphone, Settings, RefreshCcw, TrendingUp } from 'lucide-react-native';
 
 export default function DashboardScreen() {
   const { 
@@ -151,27 +151,38 @@ export default function DashboardScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Coolify Companion</Text>
+        <View style={styles.headerContent}>
+          <View style={styles.titleSection}>
+            <Text style={styles.title}>Coolify Companion</Text>
+            <Text style={styles.subtitle}>Infrastructure at a glance</Text>
+          </View>
+        </View>
         <View style={styles.headerActions}>
           <View style={[styles.connectionIndicator, (refreshingServers || refreshingApplications || refreshingServices) && styles.connectionIndicatorRefreshing]}>
             {refreshingServers || refreshingApplications || refreshingServices ? (
-              <RefreshCcw size={16} color="#2563EB" />
+              <RefreshCcw size={18} color="#6366F1" />
             ) : (
-              <PlugZap size={16} color="#10B981" />
+              <PlugZap size={18} color="#10B981" />
             )}
           </View>
         </View>
       </View>
       {version ? (
         <View style={styles.versionBar}>
-          <Text style={styles.versionText}>Version: {String(version)}</Text>
+          <View style={styles.versionContent}>
+            <TrendingUp size={14} color="#6366F1" />
+            <Text style={styles.versionText}>Version {String(version)}</Text>
+          </View>
         </View>
       ) : null}
       {longestUptimeServer ? (
         <View style={styles.versionBar}>
-          <Text style={styles.versionText}>
-            Longest uptime: {String(longestUptimeServer.server.name)} — {formatDuration(longestUptimeServer.secs)}
-          </Text>
+          <View style={styles.versionContent}>
+            <Server size={14} color="#10B981" />
+            <Text style={styles.versionText}>
+              {String(longestUptimeServer.server.name)} • {formatDuration(longestUptimeServer.secs)} uptime
+            </Text>
+          </View>
         </View>
       ) : null}
       <ScrollView
@@ -193,39 +204,53 @@ export default function DashboardScreen() {
           <View style={styles.statCard}>
             <View style={styles.cardHeader}>
               {[
-                <Server key="icon" size={20} color={serversIconColor} />,
+                <View key="icon" style={[styles.iconContainer, { backgroundColor: `${serversIconColor}15` }]}>
+                  <Server size={20} color={serversIconColor} strokeWidth={2.5} />
+                </View>,
                 <Text key="value" style={styles.cardValue}>{String(serversUp)}</Text>
               ]}
             </View>
-            <Text style={styles.cardTitle}>{String(servers.length)} Servers</Text>
+            <Text style={styles.cardTitle}>Servers</Text>
+            <Text style={styles.cardTotal}>{String(servers.length)} total</Text>
             <Text style={styles.cardSubtitle}>{String(serversDown)} down</Text>
           </View>
           
           <View style={styles.statCard}>
             <View style={styles.cardHeader}>
               {[
-                <Smartphone key="icon" size={20} color={appsIconColor} />,
+                <View key="icon" style={[styles.iconContainer, { backgroundColor: `${appsIconColor}15` }]}>
+                  <Smartphone size={20} color={appsIconColor} strokeWidth={2.5} />
+                </View>,
                 <Text key="value" style={styles.cardValue}>{String(applicationsUp)}</Text>
               ]}
             </View>
-            <Text style={styles.cardTitle}>{String(totalApplications)} Apps</Text>
+            <Text style={styles.cardTitle}>Applications</Text>
+            <Text style={styles.cardTotal}>{String(totalApplications)} total</Text>
             <Text style={styles.cardSubtitle}>{String(applicationsDown)} down</Text>
           </View>
           
           <View style={styles.statCard}>
             <View style={styles.cardHeader}>
               {[
-                <Settings key="icon" size={20} color={servicesIconColor} />,
+                <View key="icon" style={[styles.iconContainer, { backgroundColor: `${servicesIconColor}15` }]}>
+                  <Settings size={20} color={servicesIconColor} strokeWidth={2.5} />
+                </View>,
                 <Text key="value" style={styles.cardValue}>{String(servicesUp)}</Text>
               ]}
             </View>
-            <Text style={styles.cardTitle}>{String(totalServices)} Services</Text>
+            <Text style={styles.cardTitle}>Services</Text>
+            <Text style={styles.cardTotal}>{String(totalServices)} total</Text>
             <Text style={styles.cardSubtitle}>{String(servicesDown)} down</Text>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recent Deployments</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Recent Deployments</Text>
+            <View style={styles.sectionBadge}>
+              <Text style={styles.sectionBadgeText}>{deployments.length}</Text>
+            </View>
+          </View>
           {deployments.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateText}>No deployments found</Text>
@@ -253,22 +278,39 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FAFBFC',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    padding: 24,
+    paddingTop: Platform.OS === 'ios' ? 64 : 44,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.85)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderBottomWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
+  },
+  headerContent: {
+    flex: 1,
+  },
+  titleSection: {
+    gap: 2,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '800',
     color: '#111827',
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#64748B',
+    fontWeight: '500',
   },
   headerActions: {
     flexDirection: 'row',
@@ -276,37 +318,51 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   versionBar: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    backgroundColor: '#F3F4F6',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(248, 250, 252, 0.8)' : '#F8FAFC',
+    backdropFilter: Platform.OS === 'web' ? 'blur(10px)' : undefined,
+    borderBottomWidth: 0,
+  },
+  versionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   versionText: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: 13,
+    color: '#64748B',
+    fontWeight: '600',
   },
   connectionIndicator: {
     backgroundColor: '#DCFCE7',
-    borderRadius: 12,
-    padding: 6,
-    borderWidth: 1,
-    borderColor: '#10B981',
+    borderRadius: 16,
+    padding: 10,
+    borderWidth: 0,
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   connectionIndicatorRefreshing: {
-    backgroundColor: '#DBEAFE',
-    borderColor: '#2563EB',
+    backgroundColor: '#E0E7FF',
+    shadowColor: '#6366F1',
   },
   errorContainer: {
     backgroundColor: '#FEE2E2',
-    borderColor: '#FECACA',
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    margin: 20,
+    borderRadius: 16,
+    padding: 16,
+    margin: 24,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderWidth: 0,
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   errorText: {
     color: '#DC2626',
@@ -320,100 +376,154 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    padding: 16,
-    gap: 12,
+    padding: 24,
+    gap: 16,
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 12,
+  },
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cardValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '800',
     color: '#111827',
+    letterSpacing: -1,
   },
   cardTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#374151',
+    marginBottom: 2,
+  },
+  cardTotal: {
     fontSize: 12,
-    fontWeight: '600',
-    color: '#6B7280',
-    textAlign: 'center',
+    fontWeight: '500',
+    color: '#64748B',
+    marginBottom: 4,
   },
   cardSubtitle: {
-    fontSize: 10,
-    color: '#9CA3AF',
-    textAlign: 'center',
-    marginTop: 2,
+    fontSize: 11,
+    color: '#94A3B8',
+    fontWeight: '500',
   },
   section: {
-    margin: 20,
+    margin: 24,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 16,
   },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+    letterSpacing: -0.3,
+  },
+  sectionBadge: {
+    backgroundColor: '#6366F1',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  sectionBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
   deploymentsContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    paddingVertical: 8,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderRadius: 20,
+    paddingVertical: 12,
+    borderWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
   },
   deploymentRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
   deploymentInfo: {
     flex: 1,
   },
   deploymentApp: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
     color: '#111827',
-    marginBottom: 2,
+    marginBottom: 4,
+    letterSpacing: -0.2,
   },
   deploymentServer: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: 13,
+    color: '#64748B',
+    fontWeight: '500',
   },
   deploymentMeta: {
     alignItems: 'flex-end',
   },
   deploymentTime: {
-    fontSize: 12,
-    color: '#9CA3AF',
+    fontSize: 11,
+    color: '#94A3B8',
     marginTop: 4,
+    fontWeight: '500',
   },
   separator: {
     height: 1,
-    backgroundColor: '#F3F4F6',
-    marginHorizontal: 16,
+    backgroundColor: '#F1F5F9',
+    marginHorizontal: 20,
   },
   emptyState: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 40,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderRadius: 20,
+    padding: 48,
     alignItems: 'center',
+    borderWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
   },
   emptyStateText: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 4,
+    fontSize: 17,
+    color: '#64748B',
+    marginBottom: 8,
+    fontWeight: '600',
   },
   emptyStateSubtext: {
-    fontSize: 14,
-    color: '#9CA3AF',
+    fontSize: 13,
+    color: '#94A3B8',
+    fontWeight: '500',
   },
 });

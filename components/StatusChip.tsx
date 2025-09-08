@@ -10,28 +10,35 @@ export function StatusChip({ status, size = 'medium' }: StatusChipProps) {
     switch (status) {
       case 'up':
       case 'success':
-        return { backgroundColor: '#10B981', textColor: '#FFFFFF' };
+        return { backgroundColor: '#10B981', textColor: '#FFFFFF', shadowColor: '#10B981' };
       case 'down':
       case 'failed':
-        return { backgroundColor: '#EF4444', textColor: '#FFFFFF' };
+        return { backgroundColor: '#EF4444', textColor: '#FFFFFF', shadowColor: '#EF4444' };
       case 'running':
-        return { backgroundColor: '#3B82F6', textColor: '#FFFFFF' };
+        return { backgroundColor: '#6366F1', textColor: '#FFFFFF', shadowColor: '#6366F1' };
       case 'queued':
-        return { backgroundColor: '#F59E0B', textColor: '#FFFFFF' };
+        return { backgroundColor: '#F59E0B', textColor: '#FFFFFF', shadowColor: '#F59E0B' };
       case 'cancelled':
-        return { backgroundColor: '#6B7280', textColor: '#FFFFFF' };
+        return { backgroundColor: '#6B7280', textColor: '#FFFFFF', shadowColor: '#6B7280' };
       default:
-        return { backgroundColor: '#E5E7EB', textColor: '#374151' };
+        return { backgroundColor: '#E5E7EB', textColor: '#374151', shadowColor: '#E5E7EB' };
     }
   };
 
-  const { backgroundColor, textColor } = getStatusColors();
+  const { backgroundColor, textColor, shadowColor } = getStatusColors();
   const isSmall = size === 'small';
 
   return (
     <View style={[
       styles.chip,
-      { backgroundColor },
+      { 
+        backgroundColor,
+        shadowColor,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3,
+      },
       isSmall ? styles.chipSmall : styles.chipMedium
     ]}>
       <Text style={[
@@ -47,30 +54,33 @@ export function StatusChip({ status, size = 'medium' }: StatusChipProps) {
 
 const styles = StyleSheet.create({
   chip: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
     alignSelf: 'flex-start',
   },
   chipSmall: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  chipMedium: {
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
   },
+  chipMedium: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
   chipText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
     textAlign: 'center',
+    letterSpacing: 0.5,
   },
   chipTextSmall: {
-    fontSize: 10,
+    fontSize: 9,
+    fontWeight: '700',
   },
   chipTextMedium: {
-    fontSize: 12,
+    fontSize: 11,
+    fontWeight: '700',
   },
 });

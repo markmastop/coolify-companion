@@ -1,17 +1,34 @@
 import { Tabs } from 'expo-router';
 import { LayoutDashboard, Server, Smartphone, FileText, Settings } from 'lucide-react-native';
+import { Platform } from 'react-native';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#3B82F6',
-        tabBarInactiveTintColor: '#6B7280',
+        tabBarActiveTintColor: '#6366F1',
+        tabBarInactiveTintColor: '#94A3B8',
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopWidth: 1,
-          borderTopColor: '#E5E7EB',
+          backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.85)' : '#FFFFFF',
+          backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+          borderTopWidth: 0,
+          elevation: 0,
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 20,
+          height: Platform.OS === 'ios' ? 88 : 70,
+          paddingTop: 8,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+          marginTop: 4,
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
         },
       }}
     >
@@ -20,7 +37,7 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ size, color }) => (
-            <LayoutDashboard size={size} color={color} />
+            <LayoutDashboard size={22} color={color} strokeWidth={2.5} />
           ),
         }}
       />
@@ -29,7 +46,7 @@ export default function TabLayout() {
         options={{
           title: 'Servers',
           tabBarIcon: ({ size, color }) => (
-            <Server size={size} color={color} />
+            <Server size={22} color={color} strokeWidth={2.5} />
           ),
         }}
       />
@@ -38,7 +55,7 @@ export default function TabLayout() {
         options={{
           title: 'Applications',
           tabBarIcon: ({ size, color }) => (
-            <Smartphone size={size} color={color} />
+            <Smartphone size={22} color={color} strokeWidth={2.5} />
           ),
         }}
       />
@@ -47,7 +64,7 @@ export default function TabLayout() {
         options={{
           title: 'Services',
           tabBarIcon: ({ size, color }) => (
-            <Settings size={size} color={color} />
+            <Settings size={22} color={color} strokeWidth={2.5} />
           ),
         }}
       />
@@ -56,7 +73,7 @@ export default function TabLayout() {
         options={{
           title: 'Logs',
           tabBarIcon: ({ size, color }) => (
-            <FileText size={size} color={color} />
+            <FileText size={22} color={color} strokeWidth={2.5} />
           ),
         }}
       />

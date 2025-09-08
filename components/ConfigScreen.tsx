@@ -113,10 +113,12 @@ export function ConfigScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Configure Coolify Connection</Text>
-        <Text style={styles.subtitle}>
-          Enter your Coolify instance details to get started
-        </Text>
+        <View style={styles.headerSection}>
+          <Text style={styles.title}>Welcome to Coolify</Text>
+          <Text style={styles.subtitle}>
+            Connect to your Coolify instance to get started
+          </Text>
+        </View>
 
         {errorMessage && (
           <View style={styles.errorContainer}>
@@ -140,6 +142,7 @@ export function ConfigScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="url"
+              placeholderTextColor="#94A3B8"
             />
             {!!normalizedUrl && (
               <Text style={styles.helperText}>Will test connection to: {normalizedUrl}/servers</Text>
@@ -156,6 +159,7 @@ export function ConfigScreen() {
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
+              placeholderTextColor="#94A3B8"
             />
           </View>
 
@@ -199,123 +203,161 @@ export function ConfigScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#FAFBFC',
   },
   content: {
     flex: 1,
-    padding: 20,
+    padding: 24,
     justifyContent: 'center',
   },
+  headerSection: {
+    alignItems: 'center',
+    marginBottom: 48,
+  },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '800',
     color: '#111827',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
+    letterSpacing: -0.8,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#6B7280',
+    fontSize: 17,
+    color: '#64748B',
     textAlign: 'center',
-    marginBottom: 40,
+    fontWeight: '500',
+    lineHeight: 24,
   },
   errorContainer: {
     backgroundColor: '#FEE2E2',
-    borderColor: '#FECACA',
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    marginTop: 12,
-    marginBottom: 16,
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 16,
+    marginBottom: 24,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderWidth: 0,
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   errorText: {
     color: '#DC2626',
-    fontSize: 14,
+    fontSize: 13,
     flex: 1,
+    fontWeight: '500',
   },
   errorDismiss: {
     color: '#DC2626',
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '700',
     marginLeft: 12,
   },
   form: {
-    marginBottom: 40,
+    marginBottom: 48,
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 12,
+    letterSpacing: -0.2,
   },
   input: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 16,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.8)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderWidth: 0,
+    borderRadius: 16,
+    padding: 18,
+    fontSize: 15,
     color: '#111827',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
+    fontWeight: '500',
   },
   helperText: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginTop: 6,
+    fontSize: 11,
+    color: '#64748B',
+    marginTop: 8,
+    fontWeight: '500',
   },
   saveButton: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: '#6366F1',
+    borderRadius: 16,
+    padding: 18,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 24,
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 5,
   },
   saveButtonDisabled: {
-    backgroundColor: '#9CA3AF',
+    backgroundColor: '#94A3B8',
+    shadowOpacity: 0.1,
   },
   saveButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
+    letterSpacing: -0.2,
   },
   saveAnywayButton: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    padding: 12,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(248, 250, 252, 0.8)' : '#F8FAFC',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderRadius: 16,
+    padding: 16,
     alignItems: 'center',
-    marginTop: 12,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
+    marginTop: 16,
+    borderWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   saveAnywayButtonDisabled: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: '#E2E8F0',
   },
   saveAnywayButtonText: {
-    color: '#374151',
-    fontSize: 14,
-    fontWeight: '600',
+    color: '#475569',
+    fontSize: 13,
+    fontWeight: '700',
   },
   help: {
-    backgroundColor: '#EBF8FF',
-    borderRadius: 8,
-    padding: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: '#3B82F6',
+    backgroundColor: Platform.OS === 'web' ? 'rgba(238, 242, 255, 0.8)' : '#EEF2FF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderRadius: 16,
+    padding: 20,
+    borderLeftWidth: 0,
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   helpTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1E40AF',
-    marginBottom: 8,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#4338CA',
+    marginBottom: 12,
+    letterSpacing: -0.2,
   },
   helpText: {
-    fontSize: 14,
-    color: '#1E40AF',
-    lineHeight: 20,
+    fontSize: 13,
+    color: '#4338CA',
+    lineHeight: 22,
+    fontWeight: '500',
   },
 });
