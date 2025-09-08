@@ -9,6 +9,7 @@ interface CoolifyContextType {
   deployments: CoolifyDeployment[];
   applications: CoolifyApplication[];
   services: CoolifyService[];
+  version: string | null;
   isLoading: boolean;
   error: string | null;
   isConfigured: boolean;
@@ -20,6 +21,7 @@ interface CoolifyContextType {
   refreshDeployments: () => Promise<void>;
   refreshApplications: () => Promise<void>;
   refreshServices: () => Promise<void>;
+  refreshVersion: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -43,6 +45,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
   const [deployments, setDeployments] = useState<CoolifyDeployment[]>([]);
   const [applications, setApplications] = useState<CoolifyApplication[]>([]);
   const [services, setServices] = useState<CoolifyService[]>([]);
+  const [version, setVersion] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isConfigured, setIsConfigured] = useState(false);
@@ -97,9 +100,13 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
         refreshDeployments(),
         refreshApplications(),
         refreshServices(),
+        refreshVersion(),
       ]).catch(() => {
         // errors are handled inside each refresh
       });
+    } else {
+      // Even if caches are present, fetch version once to populate the UI
+      refreshVersion().catch(() => {});
     }
   }, [isConfigured]);
 
@@ -141,9 +148,21 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
         refreshDeployments(),
         refreshApplications(),
         refreshServices(),
+        refreshVersion(),
       ]);
     } catch (err) {
       setError('Failed to save configuration');
+    }
+  };
+
+  const refreshVersion = async () => {
+    if (!isConfigured) return;
+    try {
+      const v = await coolifyApi.getVersion();
+      console.log('Version API Response:', v);
+      setVersion(String(v));
+    } catch (err) {
+      console.warn('Failed to fetch version', err);
     }
   };
 
@@ -231,6 +250,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
         deployments,
         applications,
         services,
+        version,
         isLoading,
         error,
         isConfigured,
@@ -242,6 +262,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
         refreshDeployments,
         refreshApplications,
         refreshServices,
+        refreshVersion,
         clearError,
       }}
     >

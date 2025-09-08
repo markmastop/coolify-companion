@@ -170,6 +170,32 @@ class CoolifyApiService {
     return this.normalizeArrayResponse<CoolifyService>(raw, ['services']);
   }
 
+  async getVersion(): Promise<string> {
+    if (!this.config) {
+      throw new Error('API configuration not set');
+    }
+    const url = `${this.config.baseUrl}/version`;
+    try {
+      const response = await fetch(url, { headers: this.getHeaders() });
+      if (!response.ok) {
+        // Surface error but keep behavior consistent with other methods
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+      // Some Coolify endpoints may return plain text; prefer text(), fallback to JSON parse
+      const text = await response.text();
+      try {
+        const parsed = JSON.parse(text);
+        // Support shapes like { version: 'x.y.z' } or { data: 'x.y.z' }
+        return (parsed?.version ?? parsed?.data ?? text) as string;
+      } catch {
+        return text;
+      }
+    } catch (err) {
+      // Propagate error so caller can decide logging/handling
+      throw err;
+    }
+  }
+
   async getApplicationLogs(uuid: string, lines: number = 200): Promise<CoolifyLogs> {
     return this.fetchApi<CoolifyLogs>(`/applications/${uuid}/logs?lines=${lines}`);
   }

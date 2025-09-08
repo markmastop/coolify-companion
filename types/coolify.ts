@@ -3,6 +3,13 @@ export interface CoolifyServer {
   uuid: string;
   name: string;
   description?: string;
+  ip?: string;
+  is_coolify_host?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  last_online_at?: string;
+  uptime?: string | number;
+  uptime_seconds?: number;
   settings: {
     is_reachable: boolean;
     created_at?: string;

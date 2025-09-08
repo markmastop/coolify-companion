@@ -4,7 +4,7 @@ import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyDeployment } from '@/types/coolify';
-import { Wifi, Server, Smartphone, Settings, RefreshCcw } from 'lucide-react-native';
+import { PlugZap, Server, Smartphone, Settings, RefreshCcw } from 'lucide-react-native';
 
 export default function DashboardScreen() {
   const { 
@@ -12,6 +12,7 @@ export default function DashboardScreen() {
     applications,
     deployments, 
     services,
+    version,
     isLoading, 
     error, 
     isConfigured, 
@@ -19,6 +20,7 @@ export default function DashboardScreen() {
     refreshServers,
     refreshServices,
     refreshApplications,
+    refreshVersion,
     refreshingServers,
     refreshingApplications,
     refreshingServices,
@@ -32,13 +34,14 @@ export default function DashboardScreen() {
       refreshServers();
       refreshServices();
       refreshApplications();
+      refreshVersion();
     }, 30000);
 
     return () => {
       clearInterval(deploymentInterval);
       clearInterval(otherInterval);
     };
-  }, [refreshServers, refreshDeployments, refreshServices, refreshApplications]);
+  }, [refreshServers, refreshDeployments, refreshServices, refreshApplications, refreshVersion]);
 
   const onRefresh = useCallback(async () => {
     clearError();
@@ -51,6 +54,44 @@ export default function DashboardScreen() {
 
   const serversUp = servers.filter(s => s.settings.is_reachable).length;
   const serversDown = servers.filter(s => !s.settings.is_reachable).length;
+  
+  // Longest uptime across servers
+  const getUptimeSeconds = (srv: any): number => {
+    const direct = Number((srv?.uptime_seconds ?? srv?.uptime) as any);
+    if (!isNaN(direct) && direct > 0) return direct;
+    const lastOnline = srv?.last_online_at || srv?.settings?.updated_at;
+    if (lastOnline) {
+      const t = new Date(String(lastOnline)).getTime();
+      if (!isNaN(t)) {
+        const now = Date.now();
+        const diff = Math.max(0, Math.floor((now - t) / 1000));
+        return diff;
+      }
+    }
+    const created = srv?.created_at || srv?.settings?.created_at;
+    if (created) {
+      const t = new Date(String(created)).getTime();
+      if (!isNaN(t)) {
+        const now = Date.now();
+        const diff = Math.max(0, Math.floor((now - t) / 1000));
+        return diff;
+      }
+    }
+    return 0;
+  };
+
+  const formatDuration = (seconds: number): string => {
+    const d = Math.floor(seconds / 86400);
+    const h = Math.floor((seconds % 86400) / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    if (d > 0) return `${d}d ${h}h`;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
+  };
+
+  const longestUptimeServer = servers
+    .map(s => ({ server: s, secs: getUptimeSeconds(s) }))
+    .sort((a, b) => b.secs - a.secs)[0];
   
   // Applications stats
   const totalApplications = applications.length;
@@ -96,6 +137,13 @@ export default function DashboardScreen() {
           {String(item.server_name)}
         </Text>
       </View>
+      {longestUptimeServer ? (
+        <View style={styles.versionBar}>
+          <Text style={styles.versionText}>
+            Longest uptime: {String(longestUptimeServer.server.name)} — {formatDuration(longestUptimeServer.secs)}
+          </Text>
+        </View>
+      ) : null}
       <View style={styles.deploymentMeta}>
         {[
           <StatusChip key="chip" status={item.status === 'in_progress' ? 'running' : item.status} size="small" />,
@@ -121,11 +169,16 @@ export default function DashboardScreen() {
             {refreshingServers || refreshingApplications || refreshingServices ? (
               <RefreshCcw size={16} color="#2563EB" />
             ) : (
-              <Wifi size={16} color="#10B981" />
+              <PlugZap size={16} color="#10B981" />
             )}
           </View>
-          </View>
         </View>
+      </View>
+      {version ? (
+        <View style={styles.versionBar}>
+          <Text style={styles.versionText}>Version: {String(version)}</Text>
+        </View>
+      ) : null}
 
       {error && (
         <View style={styles.errorContainer}>
@@ -222,6 +275,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+  },
+  versionBar: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    backgroundColor: '#F3F4F6',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  versionText: {
+    fontSize: 12,
+    color: '#6B7280',
   },
   connectionIndicator: {
     backgroundColor: '#DCFCE7',
