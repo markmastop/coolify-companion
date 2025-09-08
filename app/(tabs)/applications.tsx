@@ -125,7 +125,7 @@ export default function ApplicationsScreen() {
       })()}
       meta={[
         item.description ? (
-          <Text key="desc" style={styles.appDescription} numberOfLines={2}>
+          <Text key="desc" style={styles.appDescription} numberOfLines={1}>
             {String(item.description)}
           </Text>
         ) : null,
@@ -333,12 +333,12 @@ const styles = StyleSheet.create({
   appDescription: {
     fontSize: 12,
     color: '#6B7280',
-    marginBottom: 4,
+    marginBottom: 0,
   },
   appRepo: {
     fontSize: 11,
     color: '#3B82F6',
-    marginBottom: 4,
+    marginBottom: 0,
   },
   lastUpdate: {
     fontSize: 12,

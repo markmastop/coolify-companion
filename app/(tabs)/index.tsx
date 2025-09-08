@@ -202,45 +202,51 @@ export default function DashboardScreen() {
 
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
-            <View style={styles.cardHeader}>
-              {[
-                <View key="icon" style={[styles.iconContainer, { backgroundColor: `${serversIconColor}15` }]}>
-                  <Server size={20} color={serversIconColor} strokeWidth={2.5} />
-                </View>,
-                <Text key="value" style={styles.cardValue}>{String(serversUp)}</Text>
-              ]}
+            <View style={styles.cardRow}>
+              <View style={[styles.iconContainer, { backgroundColor: `${serversIconColor}15` }]}>
+                <Server size={20} color={serversIconColor} strokeWidth={2.5} />
+              </View>
+              <View style={styles.cardContent}>
+                <View style={styles.cardTopRow}>
+                  <Text style={styles.cardTitle} numberOfLines={1}>Servers</Text>
+                  <Text style={styles.cardValue}>{String(serversUp)}</Text>
+                </View>
+                <Text style={styles.cardTotal} numberOfLines={1}>{String(servers.length)} total</Text>
+                <Text style={styles.cardSubtitle} numberOfLines={1}>{String(serversDown)} down</Text>
+              </View>
             </View>
-            <Text style={styles.cardTitle}>Servers</Text>
-            <Text style={styles.cardTotal}>{String(servers.length)} total</Text>
-            <Text style={styles.cardSubtitle}>{String(serversDown)} down</Text>
           </View>
-          
+
           <View style={styles.statCard}>
-            <View style={styles.cardHeader}>
-              {[
-                <View key="icon" style={[styles.iconContainer, { backgroundColor: `${appsIconColor}15` }]}>
-                  <Smartphone size={20} color={appsIconColor} strokeWidth={2.5} />
-                </View>,
-                <Text key="value" style={styles.cardValue}>{String(applicationsUp)}</Text>
-              ]}
+            <View style={styles.cardRow}>
+              <View style={[styles.iconContainer, { backgroundColor: `${appsIconColor}15` }]}>
+                <Smartphone size={20} color={appsIconColor} strokeWidth={2.5} />
+              </View>
+              <View style={styles.cardContent}>
+                <View style={styles.cardTopRow}>
+                  <Text style={styles.cardTitle} numberOfLines={1}>Applications</Text>
+                  <Text style={styles.cardValue}>{String(applicationsUp)}</Text>
+                </View>
+                <Text style={styles.cardTotal} numberOfLines={1}>{String(totalApplications)} total</Text>
+                <Text style={styles.cardSubtitle} numberOfLines={1}>{String(applicationsDown)} down</Text>
+              </View>
             </View>
-            <Text style={styles.cardTitle}>Applications</Text>
-            <Text style={styles.cardTotal}>{String(totalApplications)} total</Text>
-            <Text style={styles.cardSubtitle}>{String(applicationsDown)} down</Text>
           </View>
-          
+
           <View style={styles.statCard}>
-            <View style={styles.cardHeader}>
-              {[
-                <View key="icon" style={[styles.iconContainer, { backgroundColor: `${servicesIconColor}15` }]}>
-                  <Settings size={20} color={servicesIconColor} strokeWidth={2.5} />
-                </View>,
-                <Text key="value" style={styles.cardValue}>{String(servicesUp)}</Text>
-              ]}
+            <View style={styles.cardRow}>
+              <View style={[styles.iconContainer, { backgroundColor: `${servicesIconColor}15` }]}>
+                <Settings size={20} color={servicesIconColor} strokeWidth={2.5} />
+              </View>
+              <View style={styles.cardContent}>
+                <View style={styles.cardTopRow}>
+                  <Text style={styles.cardTitle} numberOfLines={1}>Services</Text>
+                  <Text style={styles.cardValue}>{String(servicesUp)}</Text>
+                </View>
+                <Text style={styles.cardTotal} numberOfLines={1}>{String(totalServices)} total</Text>
+                <Text style={styles.cardSubtitle} numberOfLines={1}>{String(servicesDown)} down</Text>
+              </View>
             </View>
-            <Text style={styles.cardTitle}>Services</Text>
-            <Text style={styles.cardTotal}>{String(totalServices)} total</Text>
-            <Text style={styles.cardSubtitle}>{String(servicesDown)} down</Text>
           </View>
         </View>
 

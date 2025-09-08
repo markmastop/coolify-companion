@@ -90,7 +90,7 @@ export default function ServersScreen() {
         ]}
         meta={[
           item.description ? (
-            <Text key="desc" style={styles.serverDescription} numberOfLines={2}>
+            <Text key="desc" style={styles.serverDescription} numberOfLines={1}>
               {String(item.description)}
             </Text>
           ) : null,
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   serverId: {
     fontSize: 11,
     color: '#6B7280',
-    marginBottom: 2,
+    marginBottom: 0,
   },
   serverDescription: {
     fontSize: 12,

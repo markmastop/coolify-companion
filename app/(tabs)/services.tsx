@@ -101,15 +101,7 @@ export default function ServicesScreen() {
         <Text key="server" style={styles.serviceServer} numberOfLines={1}>
           {`Server: ${String(item.server.name)}`}
         </Text>,
-        item.description ? (
-          <Text key="desc" style={styles.serviceDescription} numberOfLines={2}>
-            {String(item.description)}
-          </Text>
-        ) : null,
-        <Text key="apps" style={styles.serviceApps}>
-          {`Apps: ${Array.isArray((item as any)?.applications) ? (item as any).applications.length : 0} | DBs: ${Array.isArray((item as any)?.databases) ? (item as any).databases.length : 0}`}
-        </Text>,
-      ].filter(Boolean) as React.ReactNode[]}
+      ]}
       status={normalizeStatus('service', item.status)}
       showStatus={false}
       showUpdated={false}
@@ -269,7 +261,7 @@ const styles = StyleSheet.create({
   serviceServer: {
     fontSize: 11,
     color: '#6B7280',
-    marginBottom: 2,
+    marginBottom: 0,
   },
   serviceDescription: {
     fontSize: 12,

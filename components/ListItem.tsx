@@ -32,6 +32,14 @@ export function ListItem({
   showStatus = true,
   showUpdated = true,
 }: ListItemProps) {
+  // Enforce a 3-row layout to align with left icons and right buttons
+  const maxLines = 3;
+  const usedHeaderLines = 1 + (subtitle ? 1 : 0);
+  const availableMeta = Math.max(0, maxLines - usedHeaderLines);
+  const metaToShow = (meta || []).filter(Boolean).slice(0, availableMeta);
+  const totalLines = 1 + (subtitle ? 1 : 0) + metaToShow.length;
+  const placeholders = Math.max(0, maxLines - totalLines);
+
   const Content = (
     <View style={[styles.row, containerStyle]}> 
       {leftIcons && leftIcons.length > 0 ? (
@@ -46,8 +54,13 @@ export function ListItem({
         {subtitle ? (
           <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>
         ) : null}
-        {meta?.map((node, idx) => (
+        {metaToShow.map((node, idx) => (
           <View key={idx} style={styles.metaLine}>{node}</View>
+        ))}
+        {Array.from({ length: placeholders }).map((_, i) => (
+          <View key={`ph-${i}`} style={styles.placeholderLine}>
+            <Text style={styles.placeholderText} numberOfLines={1}> </Text>
+          </View>
         ))}
       </View>
       <View style={styles.right}>
@@ -96,12 +109,12 @@ const styles = StyleSheet.create({
     marginRight: 12,
     alignItems: 'center',
     alignSelf: 'stretch',
-    justifyContent: 'space-between',
-    paddingVertical: 4,
+    justifyContent: 'flex-start',
+    gap: 0,
   },
   iconWrap: {
     width: 28,
-    height: 28,
+    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -111,37 +124,41 @@ const styles = StyleSheet.create({
   },
   right: {
     alignItems: 'flex-end',
-    gap: 4,
+    gap: 0,
     alignSelf: 'stretch',
   },
   buttonsCol: {
     alignSelf: 'stretch',
-    justifyContent: 'space-between',
-    paddingVertical: 4,
+    justifyContent: 'flex-start',
   },
   smallBtn: {
     width: 28,
-    height: 28,
+    height: 24,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: '#E5E7EB',
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 0,
   },
   title: {
     fontSize: 14,
     fontWeight: '600',
     color: '#111827',
-    marginBottom: 2,
+    marginBottom: 0,
+    lineHeight: 24,
   },
   subtitle: {
     fontSize: 11,
     color: '#6B7280',
-    marginBottom: 2,
+    marginBottom: 0,
+    lineHeight: 24,
   },
   metaLine: {
-    marginBottom: 2,
+    marginBottom: 0,
+    minHeight: 24,
+    justifyContent: 'center',
   },
   updatedAt: {
     fontSize: 10,
@@ -151,5 +168,12 @@ const styles = StyleSheet.create({
   actions: {
     marginTop: 6,
     gap: 8,
+  },
+  placeholderLine: {
+    minHeight: 24,
+    justifyContent: 'center',
+  },
+  placeholderText: {
+    lineHeight: 24,
   },
 });
