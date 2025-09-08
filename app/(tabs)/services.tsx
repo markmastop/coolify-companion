@@ -100,10 +100,12 @@ export default function ServicesScreen() {
 
       {error && (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity onPress={clearError}>
-            <Text style={styles.errorDismiss}>Dismiss</Text>
-          </TouchableOpacity>
+          {[
+            <Text key="msg" style={styles.errorText}>{error}</Text>,
+            <TouchableOpacity key="btn" onPress={clearError}>
+              <Text style={styles.errorDismiss}>Dismiss</Text>
+            </TouchableOpacity>
+          ]}
         </View>
       )}
 

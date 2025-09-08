@@ -87,10 +87,12 @@ export default function DashboardScreen() {
         </Text>
       </View>
       <View style={styles.deploymentMeta}>
-        <StatusChip status={item.status === 'in_progress' ? 'running' : item.status} size="small" />
-        <Text style={styles.deploymentTime}>
-          {formatTimeAgo(item.created_at)}
-        </Text>
+        {[
+          <StatusChip key="chip" status={item.status === 'in_progress' ? 'running' : item.status} size="small" />,
+          <Text key="time" style={styles.deploymentTime}>
+            {formatTimeAgo(item.created_at)}
+          </Text>
+        ]}
       </View>
     </View>
   );
@@ -113,10 +115,12 @@ export default function DashboardScreen() {
 
       {error && (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{String(error)}</Text>
-          <TouchableOpacity onPress={clearError}>
-            <Text style={styles.errorDismiss}>Dismiss</Text>
-          </TouchableOpacity>
+          {[
+            <Text key="msg" style={styles.errorText}>{String(error)}</Text>,
+            <TouchableOpacity key="btn" onPress={clearError}>
+              <Text style={styles.errorDismiss}>Dismiss</Text>
+            </TouchableOpacity>
+          ]}
         </View>
       )}
 

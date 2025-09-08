@@ -120,10 +120,12 @@ export function ConfigScreen() {
 
         {errorMessage && (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{errorMessage}</Text>
-            <TouchableOpacity onPress={() => { setErrorMessage(null); clearError(); }}>
-              <Text style={styles.errorDismiss}>Dismiss</Text>
-            </TouchableOpacity>
+            {[
+              <Text key="msg" style={styles.errorText}>{errorMessage}</Text>,
+              <TouchableOpacity key="btn" onPress={() => { setErrorMessage(null); clearError(); }}>
+                <Text style={styles.errorDismiss}>Dismiss</Text>
+              </TouchableOpacity>
+            ]}
           </View>
         )}
 

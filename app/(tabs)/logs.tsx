@@ -163,18 +163,22 @@ export default function LogsScreen() {
         </View>
         {hasRunningDeployment && (
           <View style={styles.deploymentIndicator}>
-            <View style={styles.deploymentDot} />
-            <Text style={styles.deploymentText}>Deployment running</Text>
+            {[
+              <View key="dot" style={styles.deploymentDot} />,
+              <Text key="txt" style={styles.deploymentText}>Deployment running</Text>
+            ]}
           </View>
         )}
       </View>
 
       {logsState.error && (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{logsState.error}</Text>
-          <TouchableOpacity onPress={() => setLogsState(prev => ({ ...prev, error: null }))}>
-            <Text style={styles.errorDismiss}>Dismiss</Text>
-          </TouchableOpacity>
+          {[
+            <Text key="msg" style={styles.errorText}>{logsState.error}</Text>,
+            <TouchableOpacity key="btn" onPress={() => setLogsState(prev => ({ ...prev, error: null }))}>
+              <Text style={styles.errorDismiss}>Dismiss</Text>
+            </TouchableOpacity>
+          ]}
         </View>
       )}
 

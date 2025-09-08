@@ -73,28 +73,30 @@ export default function ApplicationsScreen() {
   const renderApplicationItem = ({ item }: { item: CoolifyApplication }) => (
     <View style={styles.appRow}>
       <View style={styles.appInfo}>
-        <Text style={styles.appName} numberOfLines={1}>
-          {String(item.name)}
-        </Text>
-        <Text style={styles.appId} numberOfLines={1}>
-          UUID: {String(item.uuid)}
-        </Text>
-        {item.description && (
-          <Text style={styles.appDescription} numberOfLines={2}>
-            {String(item.description)}
+        {[
+          <Text key="name" style={styles.appName} numberOfLines={1}>
+            {String(item.name)}
+          </Text>,
+          <Text key="uuid" style={styles.appId} numberOfLines={1}>
+            {`UUID: ${String(item.uuid)}`}
+          </Text>,
+          ...(item.description ? [
+            <Text key="desc" style={styles.appDescription} numberOfLines={2}>
+              {String(item.description)}
+            </Text>
+          ] : []),
+          ...(item.git_repository ? [
+            <Text key="repo" style={styles.appRepo} numberOfLines={1}>
+              {`${String(item.git_repository)} (${String(item.git_branch || 'main')})`}
+            </Text>
+          ] : []),
+          <Text key="status" style={styles.appStatus}>
+            {`Status: ${String(item.status)}`}
+          </Text>,
+          <Text key="updated" style={styles.lastUpdate}>
+            {`Updated: ${String(formatDate(String(item.updated_at)))}`}
           </Text>
-        )}
-        {item.git_repository && (
-          <Text style={styles.appRepo} numberOfLines={1}>
-            {String(item.git_repository)} ({String(item.git_branch || 'main')})
-          </Text>
-        )}
-        <Text style={styles.appStatus}>
-          Status: {String(item.status)}
-        </Text>
-        <Text style={styles.lastUpdate}>
-          Updated: {String(formatDate(String(item.updated_at)))}
-        </Text>
+        ]}
       </View>
       <View style={styles.appActions}>
         <TouchableOpacity 
@@ -132,10 +134,12 @@ export default function ApplicationsScreen() {
 
       {error && (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{String(error)}</Text>
-          <TouchableOpacity onPress={clearError}>
-            <Text style={styles.errorDismiss}>Dismiss</Text>
-          </TouchableOpacity>
+          {[
+            <Text key="msg" style={styles.errorText}>{String(error)}</Text>,
+            <TouchableOpacity key="btn" onPress={clearError}>
+              <Text style={styles.errorDismiss}>Dismiss</Text>
+            </TouchableOpacity>
+          ]}
         </View>
       )}
 

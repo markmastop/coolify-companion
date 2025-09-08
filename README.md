@@ -94,6 +94,86 @@ npx expo doctor
 npx expo install --fix
 ```
 
+## Using Expo (Web & Mobile)
+
+The project is an Expo Router app. You can run it on the web or on iOS/Android using Expo Go or a custom dev client.
+
+### General (recommended for native dev)
+
+- Install the Expo Dev Client (enables native modules in your own build):
+  ```bash
+  npx expo install expo-dev-client
+  ```
+
+### Start the Web App (development)
+
+- Run the web dev server:
+  ```bash
+  npx expo start --web
+  ```
+
+- Static export for web hosting (builds to `dist/`):
+  ```bash
+  npx expo export --platform web
+  ```
+
+### Start the Mobile App (development)
+
+You have two options:
+
+1) Expo Go (fastest, no build required)
+  - Start the dev server:
+    ```bash
+    npx expo start
+    ```
+  - Scan the QR code with the Expo Go app on your device (or press `i`/`a` for simulator/emulator).
+
+2) Custom Dev Client (needed if you want your own native runtime)
+  - Install the dev client dependency (once):
+    ```bash
+    npx expo install expo-dev-client
+    ```
+  - Build and install the app on a simulator/emulator or device:
+    ```bash
+    npx expo run:ios
+    npx expo run:android
+    ```
+  - Start Metro and reload the app:
+    ```bash
+    npx expo start
+    ```
+
+### EAS (Production Builds and OTA Updates)
+
+- Sign in and initialize (first time):
+  ```bash
+  npx eas login
+  npx eas init
+  ```
+
+- Build for the app stores:
+  ```bash
+  eas build -p ios --profile production
+  eas build -p android --profile production
+  ```
+
+- Submit to app stores (after a successful build):
+  ```bash
+  eas submit -p ios   --latest
+  eas submit -p android --latest
+  ```
+
+- Over‑the‑air (OTA) updates with EAS Update:
+  ```bash
+  eas update
+  ```
+
+- If you use EAS Deploy workflows, you might also run:
+  ```bash
+  eas deploy --prod
+  ```
+  Note: `eas update` is the standard command for OTA updates; `eas deploy` is only applicable if you have an EAS Deploy setup configured in your account.
+
 ### Expo CLI Commands
 
 ```bash
