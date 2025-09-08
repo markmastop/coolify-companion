@@ -4,7 +4,7 @@ import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyDeployment } from '@/types/coolify';
-import { Wifi, Server, Smartphone, Settings } from 'lucide-react-native';
+import { Wifi, Server, Smartphone, Settings, RefreshCcw } from 'lucide-react-native';
 
 export default function DashboardScreen() {
   const { 
@@ -19,6 +19,9 @@ export default function DashboardScreen() {
     refreshServers,
     refreshServices,
     refreshApplications,
+    refreshingServers,
+    refreshingApplications,
+    refreshingServices,
     clearError 
   } = useCoolify();
 
@@ -52,9 +55,11 @@ export default function DashboardScreen() {
   
   // Applications stats
   const totalApplications = applications.length;
-  const applicationsUp = applications.filter(app => 
-    app.status && (app.status.includes('running') || app.status.includes('healthy'))
-  ).length;
+  const applicationsUp = applications.filter(app => {
+    const raw = String(app.status || '').toLowerCase();
+    const [primary] = raw.split(':');
+    return primary.includes('running');
+  }).length;
   const applicationsDown = totalApplications - applicationsUp;
   
   // Services stats  
@@ -104,14 +109,18 @@ export default function DashboardScreen() {
         <RefreshControl refreshing={isLoading} onRefresh={onRefresh} />
       }
     >
-      <View style={styles.header}>
-        <Text style={styles.title}>Coolify Companion</Text>
-        <View style={styles.headerActions}>
-          <View style={styles.connectionIndicator}>
-            <Wifi size={16} color="#10B981" />
+        <View style={styles.header}>
+          <Text style={styles.title}>Coolify Companion</Text>
+          <View style={styles.headerActions}>
+          <View style={[styles.connectionIndicator, (refreshingServers || refreshingApplications || refreshingServices) && styles.connectionIndicatorRefreshing]}>
+            {refreshingServers || refreshingApplications || refreshingServices ? (
+              <RefreshCcw size={16} color="#2563EB" />
+            ) : (
+              <Wifi size={16} color="#10B981" />
+            )}
+          </View>
           </View>
         </View>
-      </View>
 
       {error && (
         <View style={styles.errorContainer}>
@@ -132,7 +141,7 @@ export default function DashboardScreen() {
               <Text key="value" style={styles.cardValue}>{String(serversUp)}</Text>
             ]}
           </View>
-          <Text style={styles.cardTitle}>Servers ({String(servers.length)})</Text>
+          <Text style={styles.cardTitle}>{String(servers.length)} Servers</Text>
           <Text style={styles.cardSubtitle}>{String(serversDown)} down</Text>
         </View>
         
@@ -143,7 +152,7 @@ export default function DashboardScreen() {
               <Text key="value" style={styles.cardValue}>{String(applicationsUp)}</Text>
             ]}
           </View>
-          <Text style={styles.cardTitle}>Apps ({String(totalApplications)})</Text>
+          <Text style={styles.cardTitle}>{String(totalApplications)} Apps</Text>
           <Text style={styles.cardSubtitle}>{String(applicationsDown)} down</Text>
         </View>
         
@@ -154,7 +163,7 @@ export default function DashboardScreen() {
               <Text key="value" style={styles.cardValue}>{String(servicesUp)}</Text>
             ]}
           </View>
-          <Text style={styles.cardTitle}>Services ({String(totalServices)})</Text>
+          <Text style={styles.cardTitle}>{String(totalServices)} Services</Text>
           <Text style={styles.cardSubtitle}>{String(servicesDown)} down</Text>
         </View>
       </View>
@@ -215,6 +224,10 @@ const styles = StyleSheet.create({
     padding: 6,
     borderWidth: 1,
     borderColor: '#10B981',
+  },
+  connectionIndicatorRefreshing: {
+    backgroundColor: '#DBEAFE',
+    borderColor: '#2563EB',
   },
   errorContainer: {
     backgroundColor: '#FEE2E2',

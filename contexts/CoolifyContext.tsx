@@ -12,6 +12,9 @@ interface CoolifyContextType {
   isLoading: boolean;
   error: string | null;
   isConfigured: boolean;
+  refreshingServers: boolean;
+  refreshingApplications: boolean;
+  refreshingServices: boolean;
   setConfig: (config: ApiConfig) => Promise<void>;
   refreshServers: () => Promise<void>;
   refreshDeployments: () => Promise<void>;
@@ -43,6 +46,9 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isConfigured, setIsConfigured] = useState(false);
+  const [refreshingServers, setRefreshingServers] = useState(false);
+  const [refreshingApplications, setRefreshingApplications] = useState(false);
+  const [refreshingServices, setRefreshingServices] = useState(false);
 
   // Load config and cached data on startup
   useEffect(() => {
@@ -61,16 +67,19 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
   useEffect(() => {
     if (!isConfigured) return;
 
-    const hasRunningDeployments = deployments.some(d => d.status === 'in_progress');
-    const deploymentInterval = 10000; // Always 10 seconds for deployments
-    const serverInterval = 30000;
+    const deploymentInterval = 5000; // deployments every 5s
+    const commonInterval = 30000; // servers/apps/services every 30s
 
     const deploymentPoller = setInterval(refreshDeployments, deploymentInterval);
-    const serverPoller = setInterval(refreshServers, serverInterval);
+    const serversPoller = setInterval(refreshServers, commonInterval);
+    const applicationsPoller = setInterval(refreshApplications, commonInterval);
+    const servicesPoller = setInterval(refreshServices, commonInterval);
 
     return () => {
       clearInterval(deploymentPoller);
-      clearInterval(serverPoller);
+      clearInterval(serversPoller);
+      clearInterval(applicationsPoller);
+      clearInterval(servicesPoller);
     };
   }, [isConfigured, deployments]);
 
@@ -143,6 +152,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     
     try {
       setIsLoading(true);
+      setRefreshingServers(true);
       const data = await coolifyApi.getServers();
       console.log('Servers API Response:', data);
       setServers(data);
@@ -152,6 +162,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       setError(`Failed to fetch servers: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
+      setRefreshingServers(false);
     }
   };
 
@@ -176,6 +187,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     
     try {
       setIsLoading(true);
+      setRefreshingApplications(true);
       const data = await coolifyApi.getApplications();
       console.log('Applications API Response:', data);
       setApplications(data);
@@ -185,6 +197,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       setError(`Failed to fetch applications: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
+      setRefreshingApplications(false);
     }
   };
 
@@ -193,6 +206,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     
     try {
       setIsLoading(true);
+      setRefreshingServices(true);
       const data = await coolifyApi.getServices();
       console.log('Services API Response:', data);
       setServices(data);
@@ -202,6 +216,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       setError(`Failed to fetch services: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
+      setRefreshingServices(false);
     }
   };
 
@@ -218,6 +233,9 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
         isLoading,
         error,
         isConfigured,
+        refreshingServers,
+        refreshingApplications,
+        refreshingServices,
         setConfig,
         refreshServers,
         refreshDeployments,
