@@ -49,17 +49,19 @@ export default function ServersScreen() {
       onPress={() => setSelectedServer(item)}
     >
       <View style={styles.serverInfo}>
-        <Text style={styles.serverName} numberOfLines={1}>
-          {String(item.name)}
-        </Text>
-        <Text style={styles.serverId} numberOfLines={1}>
-          ID: {String(item.id)}
-        </Text>
-        {item.description && (
-          <Text style={styles.serverDescription} numberOfLines={2}>
-            {String(item.description)}
-          </Text>
-        )}
+        {[
+          <Text key="name" style={styles.serverName} numberOfLines={1}>
+            {String(item.name)}
+          </Text>,
+          <Text key="id" style={styles.serverId} numberOfLines={1}>
+            {`ID: ${String(item.id)}`}
+          </Text>,
+          ...(item.description ? [
+            <Text key="desc" style={styles.serverDescription} numberOfLines={2}>
+              {String(item.description)}
+            </Text>
+          ] : [])
+        ]}
       </View>
       <View style={styles.serverMeta}>
         {[

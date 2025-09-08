@@ -47,26 +47,28 @@ export default function ServicesScreen() {
   const renderServiceItem = ({ item }: { item: CoolifyService }) => (
     <View style={styles.serviceRow}>
       <View style={styles.serviceInfo}>
-        <Text style={styles.serviceName} numberOfLines={1}>
-          {String(item.name)}
-        </Text>
-        <Text style={styles.serviceType} numberOfLines={1}>
-          Type: {String(item.service_type)}
-        </Text>
-        <Text style={styles.serviceServer} numberOfLines={1}>
-          Server: {String(item.server.name)}
-        </Text>
-        {item.description && (
-          <Text style={styles.serviceDescription} numberOfLines={2}>
-            {String(item.description)}
+        {[
+          <Text key="name" style={styles.serviceName} numberOfLines={1}>
+            {String(item.name)}
+          </Text>,
+          <Text key="type" style={styles.serviceType} numberOfLines={1}>
+            {`Type: ${String(item.service_type)}`}
+          </Text>,
+          <Text key="server" style={styles.serviceServer} numberOfLines={1}>
+            {`Server: ${String(item.server.name)}`}
+          </Text>,
+          ...(item.description ? [
+            <Text key="desc" style={styles.serviceDescription} numberOfLines={2}>
+              {String(item.description)}
+            </Text>
+          ] : []),
+          <Text key="apps" style={styles.serviceApps}>
+            {`Apps: ${item.applications.length} | DBs: ${item.databases.length}`}
+          </Text>,
+          <Text key="updated" style={styles.lastUpdate}>
+            {`Updated: ${String(formatDate(item.updated_at))}`}
           </Text>
-        )}
-        <Text style={styles.serviceApps}>
-          Apps: {item.applications.length} | DBs: {item.databases.length}
-        </Text>
-        <Text style={styles.lastUpdate}>
-          Updated: {String(formatDate(item.updated_at))}
-        </Text>
+        ]}
       </View>
       <View style={styles.serviceMeta}>
         {[
