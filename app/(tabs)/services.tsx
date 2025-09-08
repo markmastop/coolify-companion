@@ -4,7 +4,7 @@ import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyService } from '@/types/coolify';
-import { Layers, Database, Server as ServerIcon, Info, RefreshCw, ExternalLink } from 'lucide-react-native';
+import { Layers, Database, Server as ServerIcon, Info, RefreshCw, ExternalLink, SquarePlay, SquareDot, Activity, LifeBuoy, Globe } from 'lucide-react-native';
 import { ListItem } from '@/components/ListItem';
 import { normalizeStatus } from '@/utils/status';
 import { formatDate } from '@/utils/format';
@@ -41,11 +41,27 @@ export default function ServicesScreen() {
     <ListItem
       title={String(item.name)}
       subtitle={`Type: ${String(item.service_type)}`}
-      leftIcons={[
-        <Layers key="i1" size={16} color="#10B981" />,
-        <Database key="i2" size={16} color="#F59E0B" />,
-        <ServerIcon key="i3" size={16} color="#6B7280" />,
-      ]}
+      leftIcons={(() => {
+        const raw = String(item.status || '').toLowerCase();
+        const [p, s] = raw.split(':');
+        const primary = (p || '').trim();
+        const secondary = (s || '').trim();
+        const first = primary.includes('running')
+          ? <SquarePlay key="i1" size={16} color="#10B981" />
+          : primary.includes('exited')
+            ? <SquareDot key="i1" size={16} color="#EF4444" />
+            : <SquareDot key="i1" size={16} color="#9CA3AF" />;
+        const second = secondary.includes('unhealthy')
+          ? <LifeBuoy key="i2" size={16} color="#F59E0B" />
+          : secondary.includes('healthy')
+            ? <Activity key="i2" size={16} color="#10B981" />
+            : <Activity key="i2" size={16} color="#9CA3AF" />;
+        return [
+          first,
+          second,
+          <Globe key="i3" size={16} color="#0EA5E9" />,
+        ];
+      })()}
       rightButtons={[
         {
           icon: <Info size={14} color="#374151" />,

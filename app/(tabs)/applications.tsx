@@ -5,7 +5,7 @@ import { useCoolify } from '@/contexts/CoolifyContext';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyApplication } from '@/types/coolify';
 import { coolifyApi } from '@/services/coolifyApi';
-import { FileText, RotateCcw, Box, GitBranch, Globe } from 'lucide-react-native';
+import { FileText, RotateCcw, Globe, SquarePlay, SquareDot, Activity, LifeBuoy } from 'lucide-react-native';
 import { ListItem } from '@/components/ListItem';
 import { normalizeStatus } from '@/utils/status';
 import { formatDate } from '@/utils/format';
@@ -72,11 +72,27 @@ export default function ApplicationsScreen() {
   const renderApplicationItem = ({ item }: { item: CoolifyApplication }) => (
     <ListItem
       title={String(item.name)}
-      leftIcons={[
-        <Box key="i1" size={16} color="#3B82F6" />,
-        <GitBranch key="i2" size={16} color="#8B5CF6" />,
-        <Globe key="i3" size={16} color="#0EA5E9" />,
-      ]}
+      leftIcons={(() => {
+        const raw = String(item.status || '').toLowerCase();
+        const [p, s] = raw.split(':');
+        const primary = (p || '').trim();
+        const secondary = (s || '').trim();
+        const first = primary.includes('running')
+          ? <SquarePlay key="i1" size={16} color="#10B981" />
+          : primary.includes('exited')
+            ? <SquareDot key="i1" size={16} color="#EF4444" />
+            : <SquareDot key="i1" size={16} color="#9CA3AF" />;
+        const second = secondary.includes('unhealthy')
+          ? <LifeBuoy key="i2" size={16} color="#F59E0B" />
+          : secondary.includes('healthy')
+            ? <Activity key="i2" size={16} color="#10B981" />
+            : <Activity key="i2" size={16} color="#9CA3AF" />;
+        return [
+          first,
+          second,
+          <Globe key="i3" size={16} color="#0EA5E9" />,
+        ];
+      })()}
       meta={[
         item.description ? (
           <Text key="desc" style={styles.appDescription} numberOfLines={2}>

@@ -144,6 +144,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     try {
       setIsLoading(true);
       const data = await coolifyApi.getServers();
+      console.log('Servers API Response:', data);
       setServers(data);
       await AsyncStorage.setItem(STORAGE_KEYS.SERVERS, JSON.stringify(data));
       setError(null);
@@ -193,6 +194,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     try {
       setIsLoading(true);
       const data = await coolifyApi.getServices();
+      console.log('Services API Response:', data);
       setServices(data);
       await AsyncStorage.setItem(STORAGE_KEYS.SERVICES, JSON.stringify(data));
       setError(null);

@@ -1,17 +1,17 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Modal, Alert } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
-import { StatusChip } from '@/components/StatusChip';
+//
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyServer } from '@/types/coolify';
-import { X, Server as ServerIcon, Cpu, Globe, Info, RefreshCw, ExternalLink } from 'lucide-react-native';
+import { X, Cpu, Globe, Info, RefreshCw, ExternalLink, SquarePlay, SquareDot } from 'lucide-react-native';
 import { ListItem } from '@/components/ListItem';
 import { normalizeStatus } from '@/utils/status';
-import { formatDate } from '@/utils/format';
 
 export default function ServersScreen() {
   const { 
     servers, 
+    services,
     isLoading, 
     error, 
     isConfigured, 
@@ -39,45 +39,61 @@ export default function ServersScreen() {
     return <ConfigScreen />;
   }
 
-  const renderServerItem = ({ item }: { item: CoolifyServer }) => (
-    <ListItem
-      title={String(item.name)}
-      leftIcons={[
-        <ServerIcon key="i1" size={16} color="#10B981" />,
-        <Cpu key="i2" size={16} color="#6B7280" />,
-        <Globe key="i3" size={16} color="#3B82F6" />,
-      ]}
-      rightButtons={[
-        {
-          icon: <Info size={14} color="#374151" />,
-          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
-        },
-        {
-          icon: <RefreshCw size={14} color="#2563EB" />,
-          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
-        },
-        {
-          icon: <ExternalLink size={14} color="#10B981" />,
-          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
-        },
-      ]}
-      meta={[
-        item.description ? (
-          <Text key="desc" style={styles.serverDescription} numberOfLines={2}>
-            {String(item.description)}
+  const renderServerItem = ({ item }: { item: CoolifyServer }) => {
+    const serverServices = services.filter(s => String(s.server.uuid) === String(item.uuid));
+    const hasAnyService = serverServices.length > 0;
+    const statusStr = (txt: string | undefined) => String(txt || '').toLowerCase();
+    const hasUnhealthy = serverServices.some(s => {
+      const v = statusStr(s.status);
+      return v.includes('unhealthy') || v.includes('fail') || v.includes('error');
+    });
+    const hasFqdn = serverServices.some(s => s.applications.some(a => !!a.fqdn));
+
+    const cpuColor = hasUnhealthy ? '#F59E0B' : (hasAnyService && item.settings?.is_reachable ? '#10B981' : '#9CA3AF');
+    const globeColor = item.settings?.is_reachable ? (hasFqdn ? '#0EA5E9' : '#6B7280') : '#9CA3AF';
+
+    return (
+      <ListItem
+        title={String(item.name)}
+        leftIcons={[
+          item.settings?.is_reachable 
+            ? <SquarePlay key="i1" size={16} color="#10B981" />
+            : <SquareDot key="i1" size={16} color="#EF4444" />,
+          <Cpu key="i2" size={16} color={cpuColor} />,
+          <Globe key="i3" size={16} color={globeColor} />,
+        ]}
+        rightButtons={[
+          {
+            icon: <Info size={14} color="#374151" />,
+            onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
+          },
+          {
+            icon: <RefreshCw size={14} color="#2563EB" />,
+            onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
+          },
+          {
+            icon: <ExternalLink size={14} color="#10B981" />,
+            onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
+          },
+        ]}
+        meta={[
+          item.description ? (
+            <Text key="desc" style={styles.serverDescription} numberOfLines={2}>
+              {String(item.description)}
+            </Text>
+          ) : null,
+          <Text key="id" style={styles.serverId} numberOfLines={1}>
+            {`ID: ${String(item.id)}`}
           </Text>
-        ) : null,
-        <Text key="id" style={styles.serverId} numberOfLines={1}>
-          {`ID: ${String(item.id)}`}
-        </Text>
-      ].filter(Boolean) as React.ReactNode[]}
-      status={normalizeStatus('server', Boolean(item.settings?.is_reachable))}
-      showStatus={false}
-      showUpdated={false}
-      onPress={() => setSelectedServer(item)}
-      containerStyle={styles.serverRow}
-    />
-  );
+        ].filter(Boolean) as React.ReactNode[]}
+        status={normalizeStatus('server', Boolean(item.settings?.is_reachable))}
+        showStatus={false}
+        showUpdated={false}
+        onPress={() => setSelectedServer(item)}
+        containerStyle={styles.serverRow}
+      />
+    );
+  };
 
   const sortedServers = [...servers].sort((a, b) => a.name.localeCompare(b.name));
 
