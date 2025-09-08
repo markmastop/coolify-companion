@@ -5,7 +5,7 @@ import { useCoolify } from '@/contexts/CoolifyContext';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyApplication } from '@/types/coolify';
 import { coolifyApi } from '@/services/coolifyApi';
-import { FileText, RotateCcw, Globe, SquarePlay, SquareDot, Activity, LifeBuoy } from 'lucide-react-native';
+import { Info, Globe, SquarePlay, SquareDot, Activity, LifeBuoy, Square, RefreshCw, Play } from 'lucide-react-native';
 import { ListItem } from '@/components/ListItem';
 import { normalizeStatus } from '@/utils/status';
 import { formatDate } from '@/utils/format';
@@ -69,6 +69,36 @@ export default function ApplicationsScreen() {
     );
   };
 
+  const handleStop = async (app: CoolifyApplication) => {
+    try {
+      const result = await coolifyApi.stopApplication(String(app.uuid));
+      Alert.alert('Stop', String(result.message || 'Stop triggered'));
+      await refreshApplications();
+    } catch (error) {
+      Alert.alert('Error', `Failed to stop: ${error instanceof Error ? String(error.message) : 'Unknown error'}`);
+    }
+  };
+
+  const handleStart = async (app: CoolifyApplication) => {
+    try {
+      const result = await coolifyApi.startApplication(String(app.uuid));
+      Alert.alert('Start', String(result.message || 'Start triggered'));
+      await refreshApplications();
+    } catch (error) {
+      Alert.alert('Error', `Failed to start: ${error instanceof Error ? String(error.message) : 'Unknown error'}`);
+    }
+  };
+
+  const handleRestart = async (app: CoolifyApplication) => {
+    try {
+      const result = await coolifyApi.restartApplication(String(app.uuid));
+      Alert.alert('Restart', String(result.message || 'Restart triggered'));
+      await refreshApplications();
+    } catch (error) {
+      Alert.alert('Error', `Failed to restart: ${error instanceof Error ? String(error.message) : 'Unknown error'}`);
+    }
+  };
+
   const renderApplicationItem = ({ item }: { item: CoolifyApplication }) => (
     <ListItem
       title={String(item.name)}
@@ -108,20 +138,30 @@ export default function ApplicationsScreen() {
       status={normalizeStatus('application', item.status)}
       showStatus={false}
       showUpdated={false}
-      rightButtons={[
-        {
-          icon: <FileText size={14} color="#2563EB" />,
-          onPress: () => handleViewLogs(item),
-        },
-        {
-          icon: <RotateCcw size={14} color="#DC2626" />,
-          onPress: () => handleRedeploy(item),
-        },
-        {
-          icon: <Globe size={14} color="#059669" />,
-          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
-        },
-      ]}
+      rightButtons={(() => {
+        const raw = String(item.status || '').toLowerCase();
+        const [primary] = raw.split(':');
+        const isRunning = primary.includes('running');
+        return [
+          {
+            icon: <Info size={14} color="#2563EB" />,
+            onPress: () => handleViewLogs(item),
+          },
+          {
+            icon: <Square size={14} color="#DC2626" />,
+            onPress: () => isRunning ? handleStop(item) : Alert.alert('Already stopped'),
+          },
+          isRunning
+            ? {
+                icon: <RefreshCw size={14} color="#2563EB" />,
+                onPress: () => handleRestart(item),
+              }
+            : {
+                icon: <Play size={14} color="#10B981" />,
+                onPress: () => handleStart(item),
+              },
+        ];
+      })()}
       containerStyle={styles.appRow}
     />
   );

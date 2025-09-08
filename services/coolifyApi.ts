@@ -179,6 +179,24 @@ class CoolifyApiService {
       method: 'POST',
     });
   }
+
+  async stopApplication(uuid: string): Promise<{ success: boolean; message: string }> {
+    return this.fetchApi<{ success: boolean; message: string }>(`/applications/${uuid}/stop`, {
+      method: 'POST',
+    });
+  }
+
+  async startApplication(uuid: string): Promise<{ success: boolean; message: string }> {
+    return this.fetchApi<{ success: boolean; message: string }>(`/applications/${uuid}/start`, {
+      method: 'POST',
+    });
+  }
+
+  async restartApplication(uuid: string): Promise<{ success: boolean; message: string }> {
+    return this.fetchApi<{ success: boolean; message: string }>(`/applications/${uuid}/restart`, {
+      method: 'POST',
+    });
+  }
 }
 
 export const coolifyApi = new CoolifyApiService();

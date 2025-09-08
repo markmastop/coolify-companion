@@ -4,7 +4,7 @@ import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyService } from '@/types/coolify';
-import { Layers, Database, Server as ServerIcon, Info, RefreshCw, ExternalLink, SquarePlay, SquareDot, Activity, LifeBuoy, Globe } from 'lucide-react-native';
+import { Layers, Database, Server as ServerIcon, Info, RefreshCw, ExternalLink, SquarePlay, SquareDot, Activity, LifeBuoy, Globe, Square, Play } from 'lucide-react-native';
 import { ListItem } from '@/components/ListItem';
 import { normalizeStatus } from '@/utils/status';
 import { formatDate } from '@/utils/format';
@@ -62,20 +62,30 @@ export default function ServicesScreen() {
           <Globe key="i3" size={16} color="#0EA5E9" />,
         ];
       })()}
-      rightButtons={[
-        {
-          icon: <Info size={14} color="#374151" />,
-          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
-        },
-        {
-          icon: <RefreshCw size={14} color="#2563EB" />,
-          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
-        },
-        {
-          icon: <ExternalLink size={14} color="#10B981" />,
-          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
-        },
-      ]}
+      rightButtons={(() => {
+        const raw = String(item.status || '').toLowerCase();
+        const [primary] = raw.split(':');
+        const isRunning = primary.includes('running');
+        return [
+          {
+            icon: <Info size={14} color="#2563EB" />,
+            onPress: () => Alert.alert('Not linked', 'Service logs are not wired yet.'),
+          },
+          {
+            icon: <Square size={14} color="#DC2626" />,
+            onPress: () => Alert.alert('Not linked', isRunning ? 'Service stop not wired yet.' : 'Service already stopped.'),
+          },
+          isRunning
+            ? {
+                icon: <RefreshCw size={14} color="#2563EB" />,
+                onPress: () => Alert.alert('Not linked', 'Service restart not wired yet.'),
+              }
+            : {
+                icon: <Play size={14} color="#10B981" />,
+                onPress: () => Alert.alert('Not linked', 'Service start not wired yet.'),
+              },
+        ];
+      })()}
       meta={[
         <Text key="server" style={styles.serviceServer} numberOfLines={1}>
           {`Server: ${String(item.server.name)}`}
