@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { coolifyApi } from '@/services/coolifyApi';
 import { CoolifyServer, CoolifyDeployment, CoolifyApplication, CoolifyService, ApiConfig } from '@/types/coolify';
@@ -52,25 +52,25 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
   const [refreshingServers, setRefreshingServers] = useState(false);
   const [refreshingApplications, setRefreshingApplications] = useState(false);
   const [refreshingServices, setRefreshingServices] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const isMounted = useRef(false);
 
   // Load config and cached data on startup
   useEffect(() => {
-    setIsMounted(true);
+    isMounted.current = true;
     loadStoredData();
 
     // Register a global error handler: on any API error, return to login
     coolifyApi.setUnauthorizedHandler(async () => {
       // For now, keep cached credentials so they can be shown on the login screen
       // Do not clear stored config; simply mark as not configured to show ConfigScreen
-      if (isMounted) {
+      if (isMounted.current) {
         setIsConfigured(false);
         setError('API error. Please verify your configuration and log in again.');
       }
     });
 
     return () => {
-      setIsMounted(false);
+      isMounted.current = false;
     };
   }, []);
 
@@ -168,7 +168,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     try {
       const v = await coolifyApi.getVersion();
       console.log('Version API Response:', v);
-      if (isMounted) {
+      if (isMounted.current) {
         setVersion(String(v));
       }
     } catch (err) {
@@ -180,23 +180,23 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     if (!isConfigured) return;
     
     try {
-      if (isMounted) {
+      if (isMounted.current) {
         setIsLoading(true);
         setRefreshingServers(true);
       }
       const data = await coolifyApi.getServers();
       console.log('Servers API Response:', data);
-      if (isMounted) {
+      if (isMounted.current) {
         setServers(data);
         setError(null);
       }
       await AsyncStorage.setItem(STORAGE_KEYS.SERVERS, JSON.stringify(data));
     } catch (err) {
-      if (isMounted) {
+      if (isMounted.current) {
         setError(`Failed to fetch servers: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
     } finally {
-      if (isMounted) {
+      if (isMounted.current) {
         setIsLoading(false);
         setRefreshingServers(false);
       }
@@ -207,22 +207,22 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     if (!isConfigured) return;
     
     try {
-      if (isMounted) {
+      if (isMounted.current) {
         setIsLoading(true);
       }
       const data = await coolifyApi.getDeployments();
       console.log('Deployments API Response:', data);
-      if (isMounted) {
+      if (isMounted.current) {
         setDeployments(data);
         setError(null);
       }
       await AsyncStorage.setItem(STORAGE_KEYS.DEPLOYMENTS, JSON.stringify(data));
     } catch (err) {
-      if (isMounted) {
+      if (isMounted.current) {
         setError(`Failed to fetch deployments: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
     } finally {
-      if (isMounted) {
+      if (isMounted.current) {
         setIsLoading(false);
       }
     }
@@ -232,23 +232,23 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     if (!isConfigured) return;
     
     try {
-      if (isMounted) {
+      if (isMounted.current) {
         setIsLoading(true);
         setRefreshingApplications(true);
       }
       const data = await coolifyApi.getApplications();
       console.log('Applications API Response:', data);
-      if (isMounted) {
+      if (isMounted.current) {
         setApplications(data);
         setError(null);
       }
       await AsyncStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(data));
     } catch (err) {
-      if (isMounted) {
+      if (isMounted.current) {
         setError(`Failed to fetch applications: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
     } finally {
-      if (isMounted) {
+      if (isMounted.current) {
         setIsLoading(false);
         setRefreshingApplications(false);
       }
@@ -259,23 +259,23 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     if (!isConfigured) return;
     
     try {
-      if (isMounted) {
+      if (isMounted.current) {
         setIsLoading(true);
         setRefreshingServices(true);
       }
       const data = await coolifyApi.getServices();
       console.log('Services API Response:', data);
-      if (isMounted) {
+      if (isMounted.current) {
         setServices(data);
         setError(null);
       }
       await AsyncStorage.setItem(STORAGE_KEYS.SERVICES, JSON.stringify(data));
     } catch (err) {
-      if (isMounted) {
+      if (isMounted.current) {
         setError(`Failed to fetch services: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
     } finally {
-      if (isMounted) {
+      if (isMounted.current) {
         setIsLoading(false);
         setRefreshingServices(false);
       }
@@ -283,7 +283,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
   };
 
   const clearError = () => {
-    if (isMounted) {
+    if (isMounted.current) {
       setError(null);
     }
   };
