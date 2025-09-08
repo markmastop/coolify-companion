@@ -5,7 +5,10 @@ import { useCoolify } from '@/contexts/CoolifyContext';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyApplication } from '@/types/coolify';
 import { coolifyApi } from '@/services/coolifyApi';
-import { FileText, RotateCcw } from 'lucide-react-native';
+import { FileText, RotateCcw, Box, GitBranch, Globe } from 'lucide-react-native';
+import { ListItem } from '@/components/ListItem';
+import { normalizeStatus } from '@/utils/status';
+import { formatDate } from '@/utils/format';
 
 export default function ApplicationsScreen() {
   const { 
@@ -66,59 +69,48 @@ export default function ApplicationsScreen() {
     );
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(String(dateString)).toLocaleString();
-  };
-
   const renderApplicationItem = ({ item }: { item: CoolifyApplication }) => (
-    <View style={styles.appRow}>
-      <View style={styles.appInfo}>
-        {[
-          <Text key="name" style={styles.appName} numberOfLines={1}>
-            {String(item.name)}
-          </Text>,
-          <Text key="uuid" style={styles.appId} numberOfLines={1}>
-            {`UUID: ${String(item.uuid)}`}
-          </Text>,
-          ...(item.description ? [
-            <Text key="desc" style={styles.appDescription} numberOfLines={2}>
-              {String(item.description)}
-            </Text>
-          ] : []),
-          ...(item.git_repository ? [
-            <Text key="repo" style={styles.appRepo} numberOfLines={1}>
-              {`${String(item.git_repository)} (${String(item.git_branch || 'main')})`}
-            </Text>
-          ] : []),
-          <Text key="status" style={styles.appStatus}>
-            {`Status: ${String(item.status)}`}
-          </Text>,
-          <Text key="updated" style={styles.lastUpdate}>
-            {`Updated: ${String(formatDate(String(item.updated_at)))}`}
+    <ListItem
+      title={String(item.name)}
+      leftIcons={[
+        <Box key="i1" size={16} color="#3B82F6" />,
+        <GitBranch key="i2" size={16} color="#8B5CF6" />,
+        <Globe key="i3" size={16} color="#0EA5E9" />,
+      ]}
+      meta={[
+        item.description ? (
+          <Text key="desc" style={styles.appDescription} numberOfLines={2}>
+            {String(item.description)}
           </Text>
-        ]}
-      </View>
-      <View style={styles.appActions}>
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => handleViewLogs(item)}
-        >
-          {[
-            <FileText key="icon" size={16} color="#3B82F6" />, 
-            <Text key="label" style={styles.actionButtonText}>Logs</Text>
-          ]}
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.redeployButton]}
-          onPress={() => handleRedeploy(item)}
-        >
-          {[
-            <RotateCcw key="icon" size={16} color="#EF4444" />, 
-            <Text key="label" style={[styles.actionButtonText, styles.redeployButtonText]}>Redeploy</Text>
-          ]}
-        </TouchableOpacity>
-      </View>
-    </View>
+        ) : null,
+        item.git_repository ? (
+          <Text key="repo" style={styles.appRepo} numberOfLines={1}>
+            {`${String(item.git_repository)} (${String(item.git_branch || 'main')})`}
+          </Text>
+        ) : null,
+      ].filter(Boolean) as React.ReactNode[]}
+      status={normalizeStatus('application', item.status)}
+      updatedAt={`Updated: ${formatDate(item.updated_at)}`}
+      actions={(
+        <View style={styles.appActions}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => handleViewLogs(item)}
+          >
+            <FileText size={16} color="#3B82F6" />
+            <Text style={styles.actionButtonText}>Logs</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.redeployButton]}
+            onPress={() => handleRedeploy(item)}
+          >
+            <RotateCcw size={16} color="#EF4444" />
+            <Text style={[styles.actionButtonText, styles.redeployButtonText]}>Redeploy</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      containerStyle={styles.appRow}
+    />
   );
 
   return (
@@ -235,12 +227,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 8,
   },
-  appRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-  },
+  appRow: {},
   appInfo: {
     flex: 1,
     paddingRight: 16,
@@ -264,11 +251,6 @@ const styles = StyleSheet.create({
   appRepo: {
     fontSize: 12,
     color: '#3B82F6',
-    marginBottom: 4,
-  },
-  appStatus: {
-    fontSize: 12,
-    color: '#6B7280',
     marginBottom: 4,
   },
   lastUpdate: {

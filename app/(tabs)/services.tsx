@@ -4,6 +4,10 @@ import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyService } from '@/types/coolify';
+import { Layers, Database, Server as ServerIcon } from 'lucide-react-native';
+import { ListItem } from '@/components/ListItem';
+import { normalizeStatus } from '@/utils/status';
+import { formatDate } from '@/utils/format';
 
 export default function ServicesScreen() {
   const { 
@@ -33,58 +37,32 @@ export default function ServicesScreen() {
     return <ConfigScreen />;
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
-  };
-
-  const getServiceStatusColor = (status: string): 'green' | 'red' | 'blue' | 'orange' => {
-    if (status.includes('running') && status.includes('healthy')) return 'green';
-    if (status.includes('running') && status.includes('unhealthy')) return 'orange';
-    if (status.includes('running')) return 'blue';
-    return 'red';
-  };
-
   const renderServiceItem = ({ item }: { item: CoolifyService }) => (
-    <View style={styles.serviceRow}>
-      <View style={styles.serviceInfo}>
-        {[
-          <Text key="name" style={styles.serviceName} numberOfLines={1}>
-            {String(item.name)}
-          </Text>,
-          <Text key="type" style={styles.serviceType} numberOfLines={1}>
-            {`Type: ${String(item.service_type)}`}
-          </Text>,
-          <Text key="server" style={styles.serviceServer} numberOfLines={1}>
-            {`Server: ${String(item.server.name)}`}
-          </Text>,
-          ...(item.description ? [
-            <Text key="desc" style={styles.serviceDescription} numberOfLines={2}>
-              {String(item.description)}
-            </Text>
-          ] : []),
-          <Text key="apps" style={styles.serviceApps}>
-            {`Apps: ${item.applications.length} | DBs: ${item.databases.length}`}
-          </Text>,
-          <Text key="updated" style={styles.lastUpdate}>
-            {`Updated: ${String(formatDate(item.updated_at))}`}
+    <ListItem
+      title={String(item.name)}
+      subtitle={`Type: ${String(item.service_type)}`}
+      leftIcons={[
+        <Layers key="i1" size={16} color="#10B981" />,
+        <Database key="i2" size={16} color="#F59E0B" />,
+        <ServerIcon key="i3" size={16} color="#6B7280" />,
+      ]}
+      meta={[
+        <Text key="server" style={styles.serviceServer} numberOfLines={1}>
+          {`Server: ${String(item.server.name)}`}
+        </Text>,
+        item.description ? (
+          <Text key="desc" style={styles.serviceDescription} numberOfLines={2}>
+            {String(item.description)}
           </Text>
-        ]}
-      </View>
-      <View style={styles.serviceMeta}>
-        {[
-          <StatusChip 
-            key="chip"
-            status={getServiceStatusColor(item.status) === 'green' ? 'success' : 
-                   getServiceStatusColor(item.status) === 'orange' ? 'running' :
-                   getServiceStatusColor(item.status) === 'blue' ? 'running' : 'failed'} 
-            size="small" 
-          />,
-          <Text key="text" style={styles.serviceStatus}>
-            {String(item.status)}
-          </Text>
-        ]}
-      </View>
-    </View>
+        ) : null,
+        <Text key="apps" style={styles.serviceApps}>
+          {`Apps: ${item.applications.length} | DBs: ${item.databases.length}`}
+        </Text>,
+      ].filter(Boolean) as React.ReactNode[]}
+      status={normalizeStatus('service', item.status)}
+      updatedAt={`Updated: ${formatDate(item.updated_at)}`}
+      containerStyle={styles.serviceRow}
+    />
   );
 
   const sortedServices = [...services].sort((a, b) => a.name.localeCompare(b.name));

@@ -4,7 +4,10 @@ import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyServer } from '@/types/coolify';
-import { X } from 'lucide-react-native';
+import { X, Server as ServerIcon, Cpu, Globe } from 'lucide-react-native';
+import { ListItem } from '@/components/ListItem';
+import { normalizeStatus } from '@/utils/status';
+import { formatDate } from '@/utils/format';
 
 export default function ServersScreen() {
   const { 
@@ -36,42 +39,29 @@ export default function ServersScreen() {
     return <ConfigScreen />;
   }
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'No date';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'Invalid date';
-    return date.toLocaleDateString();
-  };
-
   const renderServerItem = ({ item }: { item: CoolifyServer }) => (
-    <TouchableOpacity
-      style={styles.serverRow}
-      onPress={() => setSelectedServer(item)}
-    >
-      <View style={styles.serverInfo}>
-        {[
-          <Text key="name" style={styles.serverName} numberOfLines={1}>
-            {String(item.name)}
-          </Text>,
-          <Text key="id" style={styles.serverId} numberOfLines={1}>
-            {`ID: ${String(item.id)}`}
-          </Text>,
-          ...(item.description ? [
-            <Text key="desc" style={styles.serverDescription} numberOfLines={2}>
-              {String(item.description)}
-            </Text>
-          ] : [])
-        ]}
-      </View>
-      <View style={styles.serverMeta}>
-        {[
-          <StatusChip key="chip" status={item.settings.is_reachable ? 'up' : 'down'} size="small" />,
-          <Text key="text" style={styles.lastUpdate}>
-            {String(formatDate(item.settings?.created_at || 'No date available'))}
+    <ListItem
+      title={String(item.name)}
+      leftIcons={[
+        <ServerIcon key="i1" size={16} color="#10B981" />,
+        <Cpu key="i2" size={16} color="#6B7280" />,
+        <Globe key="i3" size={16} color="#3B82F6" />,
+      ]}
+      meta={[
+        item.description ? (
+          <Text key="desc" style={styles.serverDescription} numberOfLines={2}>
+            {String(item.description)}
           </Text>
-        ]}
-      </View>
-    </TouchableOpacity>
+        ) : null,
+        <Text key="id" style={styles.serverId} numberOfLines={1}>
+          {`ID: ${String(item.id)}`}
+        </Text>
+      ].filter(Boolean) as React.ReactNode[]}
+      status={normalizeStatus('server', Boolean(item.settings?.is_reachable))}
+      updatedAt={`Created: ${formatDate(item.settings?.created_at || null)}`}
+      onPress={() => setSelectedServer(item)}
+      containerStyle={styles.serverRow}
+    />
   );
 
   const sortedServers = [...servers].sort((a, b) => a.name.localeCompare(b.name));
@@ -166,7 +156,7 @@ export default function ServersScreen() {
               
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Created</Text>
-                <Text style={styles.detailValue}>{String(formatDate(selectedServer.settings?.created_at || 'No date available'))}</Text>
+                <Text style={styles.detailValue}>{String(formatDate(selectedServer.settings?.created_at || null))}</Text>
               </View>
             </ScrollView>
           </View>
@@ -243,13 +233,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 8,
   },
-  serverRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
+  serverRow: {},
   serverInfo: {
     flex: 1,
   },
