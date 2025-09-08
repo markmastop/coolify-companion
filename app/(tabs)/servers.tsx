@@ -1,10 +1,10 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Modal, Alert } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyServer } from '@/types/coolify';
-import { X, Server as ServerIcon, Cpu, Globe } from 'lucide-react-native';
+import { X, Server as ServerIcon, Cpu, Globe, Info, RefreshCw, ExternalLink } from 'lucide-react-native';
 import { ListItem } from '@/components/ListItem';
 import { normalizeStatus } from '@/utils/status';
 import { formatDate } from '@/utils/format';
@@ -47,6 +47,20 @@ export default function ServersScreen() {
         <Cpu key="i2" size={16} color="#6B7280" />,
         <Globe key="i3" size={16} color="#3B82F6" />,
       ]}
+      rightButtons={[
+        {
+          icon: <Info size={14} color="#374151" />,
+          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
+        },
+        {
+          icon: <RefreshCw size={14} color="#2563EB" />,
+          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
+        },
+        {
+          icon: <ExternalLink size={14} color="#10B981" />,
+          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
+        },
+      ]}
       meta={[
         item.description ? (
           <Text key="desc" style={styles.serverDescription} numberOfLines={2}>
@@ -58,7 +72,8 @@ export default function ServersScreen() {
         </Text>
       ].filter(Boolean) as React.ReactNode[]}
       status={normalizeStatus('server', Boolean(item.settings?.is_reachable))}
-      updatedAt={`Created: ${formatDate(item.settings?.created_at || null)}`}
+      showStatus={false}
+      showUpdated={false}
       onPress={() => setSelectedServer(item)}
       containerStyle={styles.serverRow}
     />

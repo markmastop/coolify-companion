@@ -13,6 +13,9 @@ interface ListItemProps {
   onPress?: () => void;
   containerStyle?: ViewStyle;
   leftIcons?: React.ReactNode[];
+  rightButtons?: Array<{ icon: React.ReactNode; onPress: () => void }>;
+  showStatus?: boolean;
+  showUpdated?: boolean;
 }
 
 export function ListItem({
@@ -25,6 +28,9 @@ export function ListItem({
   onPress,
   containerStyle,
   leftIcons = [],
+  rightButtons = [],
+  showStatus = true,
+  showUpdated = true,
 }: ListItemProps) {
   const Content = (
     <View style={[styles.row, containerStyle]}> 
@@ -45,9 +51,20 @@ export function ListItem({
         ))}
       </View>
       <View style={styles.right}>
-        <StatusChip status={status} size="small" />
-        {updatedAt ? (
+        {showStatus ? (
+          <StatusChip status={status} size="small" />
+        ) : null}
+        {showUpdated && updatedAt ? (
           <Text style={styles.updatedAt} numberOfLines={1}>{updatedAt}</Text>
+        ) : null}
+        {rightButtons && rightButtons.length > 0 ? (
+          <View style={styles.buttonsCol}>
+            {rightButtons.map((btn, idx) => (
+              <TouchableOpacity key={idx} style={styles.smallBtn} onPress={btn.onPress}>
+                {btn.icon}
+              </TouchableOpacity>
+            ))}
+          </View>
         ) : null}
         {actions ? (
           <View style={styles.actions}>{actions}</View>
@@ -70,17 +87,23 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 16,
   },
   iconCol: {
     width: 28,
     marginRight: 12,
     alignItems: 'center',
+    alignSelf: 'stretch',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
   },
   iconWrap: {
-    marginVertical: 2,
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   left: {
     flex: 1,
@@ -89,6 +112,22 @@ const styles = StyleSheet.create({
   right: {
     alignItems: 'flex-end',
     gap: 4,
+    alignSelf: 'stretch',
+  },
+  buttonsCol: {
+    alignSelf: 'stretch',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+  smallBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 16,

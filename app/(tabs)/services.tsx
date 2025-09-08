@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyService } from '@/types/coolify';
-import { Layers, Database, Server as ServerIcon } from 'lucide-react-native';
+import { Layers, Database, Server as ServerIcon, Info, RefreshCw, ExternalLink } from 'lucide-react-native';
 import { ListItem } from '@/components/ListItem';
 import { normalizeStatus } from '@/utils/status';
 import { formatDate } from '@/utils/format';
@@ -46,6 +46,20 @@ export default function ServicesScreen() {
         <Database key="i2" size={16} color="#F59E0B" />,
         <ServerIcon key="i3" size={16} color="#6B7280" />,
       ]}
+      rightButtons={[
+        {
+          icon: <Info size={14} color="#374151" />,
+          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
+        },
+        {
+          icon: <RefreshCw size={14} color="#2563EB" />,
+          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
+        },
+        {
+          icon: <ExternalLink size={14} color="#10B981" />,
+          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
+        },
+      ]}
       meta={[
         <Text key="server" style={styles.serviceServer} numberOfLines={1}>
           {`Server: ${String(item.server.name)}`}
@@ -60,7 +74,8 @@ export default function ServicesScreen() {
         </Text>,
       ].filter(Boolean) as React.ReactNode[]}
       status={normalizeStatus('service', item.status)}
-      updatedAt={`Updated: ${formatDate(item.updated_at)}`}
+      showStatus={false}
+      showUpdated={false}
       containerStyle={styles.serviceRow}
     />
   );

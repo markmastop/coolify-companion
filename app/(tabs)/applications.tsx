@@ -90,25 +90,22 @@ export default function ApplicationsScreen() {
         ) : null,
       ].filter(Boolean) as React.ReactNode[]}
       status={normalizeStatus('application', item.status)}
-      updatedAt={`Updated: ${formatDate(item.updated_at)}`}
-      actions={(
-        <View style={styles.appActions}>
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => handleViewLogs(item)}
-          >
-            <FileText size={16} color="#3B82F6" />
-            <Text style={styles.actionButtonText}>Logs</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.redeployButton]}
-            onPress={() => handleRedeploy(item)}
-          >
-            <RotateCcw size={16} color="#EF4444" />
-            <Text style={[styles.actionButtonText, styles.redeployButtonText]}>Redeploy</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      showStatus={false}
+      showUpdated={false}
+      rightButtons={[
+        {
+          icon: <FileText size={14} color="#2563EB" />,
+          onPress: () => handleViewLogs(item),
+        },
+        {
+          icon: <RotateCcw size={14} color="#DC2626" />,
+          onPress: () => handleRedeploy(item),
+        },
+        {
+          icon: <Globe size={14} color="#059669" />,
+          onPress: () => Alert.alert('Not linked', 'This button is a placeholder.'),
+        },
+      ]}
       containerStyle={styles.appRow}
     />
   );
