@@ -144,9 +144,12 @@ export default function DashboardScreen() {
     <View style={styles.container}>
       {/* Header moved into navigation bar via Tabs options */}
       <View style={styles.summaryBar}>
-        <Text style={styles.headerSummary}>
-          <TrendingUp size={14} color="#6366F1" /> Version {String(version)}
-        </Text>
+        <View style={styles.summaryRow}>
+          <TrendingUp size={14} color="#6366F1" />
+          <Text style={styles.headerSummary}>
+            Version {String(version)}
+          </Text>
+        </View>
         <View style={styles.progressContainer}>
           <View
             style={[
@@ -331,8 +334,13 @@ const styles = StyleSheet.create({
     backdropFilter: Platform.OS === 'web' ? 'blur(10px)' : undefined,
     borderBottomWidth: 0,
   },
+  summaryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   headerSummary: {
-    marginTop: 0,
+    marginTop: 6,
     fontSize: 14,
     color: '#64748B',
     fontWeight: '500',
