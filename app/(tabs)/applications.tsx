@@ -5,7 +5,7 @@ import { useCoolify } from '@/contexts/CoolifyContext';
 import { ConfigScreen } from '@/components/ConfigScreen';
 import { CoolifyApplication } from '@/types/coolify';
 import { coolifyApi } from '@/services/coolifyApi';
-import { Info, Globe, SquarePlay, SquareDot, Activity, LifeBuoy, Square, RefreshCw, Play } from 'lucide-react-native';
+import { Info, Globe, SquarePlay, SquareDot, Activity, LifeBuoy, Square, RefreshCw, Play, PlugZap } from 'lucide-react-native';
 import { ListItem } from '@/components/ListItem';
 import { normalizeStatus } from '@/utils/status';
 import { formatDate } from '@/utils/format';
@@ -174,7 +174,12 @@ export default function ApplicationsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Applications</Text>
+        <View style={styles.headerContent}>
+          <View style={styles.titleSection}>
+            <Text style={styles.title}>Applications</Text>
+            <Text style={styles.subtitle}>Your apps, running smoothly!</Text>
+          </View>
+        </View>
       </View>
       <View style={styles.summaryBar}>
         <Text style={styles.headerSummary}>
@@ -237,6 +242,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9FAFB',
   },
+  headerContent: {
+    flex: 1,
+  },
+  titleSection: {
+    gap: 2,
+  },
   header: {
     flexDirection: 'column',
     justifyContent: 'flex-start',
@@ -257,6 +268,11 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#111827',
     letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#64748B',
+    fontWeight: '500',
   },
   headerSummary: {
     marginTop: 6,

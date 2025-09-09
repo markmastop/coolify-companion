@@ -103,10 +103,15 @@ export default function ServersScreen() {
   const sortedServers = [...servers].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <>
-      <View style={styles.header}>
-        <Text style={styles.title}>Servers</Text>
-      </View>
+    <View style={styles.container}>
+       <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <View style={styles.titleSection}>
+            <Text style={styles.title}>Servers</Text>
+              <Text style={styles.subtitle}>Your servers, always in sight!</Text>
+            </View>
+           </View>
+        </View>
       <View style={styles.summaryBar}>
         <Text style={styles.headerSummary}>
           {String(totalServers)} total • {String(upServers)} up • {String(downServers)} down • {String(tunnelServers)} tunnels • {String(buildSlots)} slots
@@ -210,7 +215,7 @@ export default function ServersScreen() {
           </View>
         )}
       </Modal>
-    </>
+    </View>
   );
 }
 
@@ -234,11 +239,22 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 5,
   },
+  headerContent: {
+    flex: 1,
+  },
+  titleSection: {
+    gap: 2,
+  },
   title: {
     fontSize: 28,
     fontWeight: '800',
     color: '#111827',
     letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#64748B',
+    fontWeight: '500',
   },
   headerSummary: {
     marginTop: 6,
