@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Platform } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
@@ -27,21 +27,7 @@ export default function DashboardScreen() {
     clearError 
   } = useCoolify();
 
-  // Auto-refresh: deployments every 15s; others every 30s
-  useEffect(() => {
-    const deploymentInterval = setInterval(refreshDeployments, 15000);
-    const otherInterval = setInterval(() => {
-      refreshServers();
-      refreshServices();
-      refreshApplications();
-      refreshVersion();
-    }, 30000);
-
-    return () => {
-      clearInterval(deploymentInterval);
-      clearInterval(otherInterval);
-    };
-  }, [refreshServers, refreshDeployments, refreshServices, refreshApplications, refreshVersion]);
+  // Removed auto-refresh; use pull-to-refresh instead
 
   const onRefresh = useCallback(async () => {
     clearError();

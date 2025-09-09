@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
@@ -19,14 +19,7 @@ export default function ServicesScreen() {
     clearError 
   } = useCoolify();
 
-  // Auto-refresh every 30 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refreshServices();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [refreshServices]);
+  // Removed auto-refresh; use pull-to-refresh instead
 
   const onRefresh = useCallback(async () => {
     clearError();

@@ -66,25 +66,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     });
   }, []);
 
-  // Setup polling when configured
-  useEffect(() => {
-    if (!isConfigured) return;
-
-    const deploymentInterval = 15000; // deployments every 15s
-    const commonInterval = 30000; // servers/apps/services every 30s
-
-    const deploymentPoller = setInterval(refreshDeployments, deploymentInterval);
-    const serversPoller = setInterval(refreshServers, commonInterval);
-    const applicationsPoller = setInterval(refreshApplications, commonInterval);
-    const servicesPoller = setInterval(refreshServices, commonInterval);
-
-    return () => {
-      clearInterval(deploymentPoller);
-      clearInterval(serversPoller);
-      clearInterval(applicationsPoller);
-      clearInterval(servicesPoller);
-    };
-  }, [isConfigured, deployments]);
+  // Removed global polling; rely on pull-to-refresh and manual actions
 
   // Ensure data is fetched immediately after configuration if caches are empty
   useEffect(() => {

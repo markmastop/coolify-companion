@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useCoolify } from '@/contexts/CoolifyContext';
@@ -20,13 +20,7 @@ export default function ApplicationsScreen() {
     clearError 
   } = useCoolify();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refreshApplications();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [refreshApplications]);
+  // Removed auto-refresh; use pull-to-refresh instead
 
   const onRefresh = useCallback(async () => {
     clearError();
