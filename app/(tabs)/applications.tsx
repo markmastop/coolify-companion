@@ -173,14 +173,7 @@ export default function ApplicationsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <View style={styles.titleSection}>
-            <Text style={styles.title}>Applications</Text>
-            <Text style={styles.subtitle}>Your apps, running smoothly!</Text>
-          </View>
-        </View>
-      </View>
+      {/* Header moved into navigation bar via Tabs options */}
       <View style={styles.summaryBar}>
         <Text style={styles.headerSummary}>
           {String(totalApps)} total • {String(appsRunning)} running • {String(appsDown)} stopped • {String(appsWithDomain)} domains • {String(appsWithHealth)} health checks

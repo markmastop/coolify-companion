@@ -106,14 +106,7 @@ export default function ServicesScreen() {
 
   return (
     <View style={styles.container}>
-       <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <View style={styles.titleSection}>
-            <Text style={styles.title}>Services</Text>
-              <Text style={styles.subtitle}>Your services, always under control!</Text>
-            </View>
-           </View>
-        </View>
+      {/* Header moved into navigation bar via Tabs options */}
       <View style={styles.summaryBar}>
         <Text style={styles.headerSummary}>
           {String(totalServices)} total • {String(servicesRunning)} running • {String(servicesStopped)} stopped • {String(servicesHealthy)} healthy • {String(servicesUnhealthy)} unhealthy

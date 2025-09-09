@@ -104,14 +104,7 @@ export default function ServersScreen() {
 
   return (
     <View style={styles.container}>
-       <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <View style={styles.titleSection}>
-            <Text style={styles.title}>Servers</Text>
-              <Text style={styles.subtitle}>Your servers, always in sight!</Text>
-            </View>
-           </View>
-        </View>
+      {/* Header moved into navigation bar via Tabs options */}
       <View style={styles.summaryBar}>
         <Text style={styles.headerSummary}>
           {String(totalServers)} total • {String(upServers)} up • {String(downServers)} down • {String(tunnelServers)} tunnels • {String(buildSlots)} slots

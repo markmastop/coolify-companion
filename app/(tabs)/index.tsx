@@ -142,23 +142,7 @@ export default function DashboardScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <View style={styles.titleSection}>
-            <Text style={styles.title}>Coolify Companion</Text>
-            <Text style={styles.subtitle}>Your infrastructure at a glance!</Text>
-          </View>
-        </View>
-        <View style={styles.headerActions}>
-          <View style={[styles.connectionIndicator, (refreshingServers || refreshingApplications || refreshingServices) && styles.connectionIndicatorRefreshing]}>
-            {refreshingServers || refreshingApplications || refreshingServices ? (
-              <RefreshCcw size={18} color="#6366F1" />
-            ) : (
-              <PlugZap size={18} color="#10B981" />
-            )}
-          </View>
-        </View>
-      </View>
+      {/* Header moved into navigation bar via Tabs options */}
       <View style={styles.summaryBar}>
         <Text style={styles.headerSummary}>
           <TrendingUp size={14} color="#6366F1" /> Version {String(version)}
