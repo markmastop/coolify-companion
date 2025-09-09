@@ -104,7 +104,18 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     return () => clearInterval(interval);
   }, [isConfigured, deployments]);
 
-  // Ensure data is fetched immediately after configuration if caches are empty
+  // Silent baseline polling for servers, applications, and services every 60s
+  useEffect(() => {
+    if (!isConfigured) return;
+    const interval = setInterval(() => {
+      refreshServers(true).catch(() => {});
+      refreshApplications(true).catch(() => {});
+      refreshServices(true).catch(() => {});
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [isConfigured]);
+
+  // Ensure data is fetched immediately after configuration if caches are empty (silent)
   useEffect(() => {
     if (!isConfigured) return;
     const needsInitialFetch =
@@ -114,10 +125,10 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       services.length === 0;
     if (needsInitialFetch) {
       Promise.all([
-        refreshServers(),
-        refreshDeployments(),
-        refreshApplications(),
-        refreshServices(),
+        refreshServers(true),
+        refreshDeployments(true),
+        refreshApplications(true),
+        refreshServices(true),
         refreshVersion(),
       ]).catch(() => {
         // errors are handled inside each refresh
@@ -160,12 +171,12 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       setIsConfigured(true);
       setError(null);
       
-      // Load initial data
+      // Load initial data (silent)
       await Promise.all([
-        refreshServers(),
-        refreshDeployments(),
-        refreshApplications(),
-        refreshServices(),
+        refreshServers(true),
+        refreshDeployments(true),
+        refreshApplications(true),
+        refreshServices(true),
         refreshVersion(),
       ]);
     } catch (err) {
