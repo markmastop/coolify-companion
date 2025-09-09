@@ -96,6 +96,10 @@ export default function ApplicationsScreen() {
   const renderApplicationItem = ({ item }: { item: CoolifyApplication }) => (
     <ListItem
       title={String(item.name)}
+      subtitle={(() => {
+        const buildPack = (item as any)?.build_pack || (item as any)?.buildpack || (item as any)?.build_type || (item as any)?.image;
+        return buildPack ? `Build pack: ${String(buildPack)}` : undefined;
+      })()}
       leftIcons={(() => {
         const raw = String(item.status || '').toLowerCase();
         const [p, s] = raw.split(':');
@@ -117,18 +121,17 @@ export default function ApplicationsScreen() {
           <Globe key="i3" size={16} color="#0EA5E9" />,
         ];
       })()}
-      meta={[
-        item.description ? (
-          <Text key="desc" style={styles.appDescription} numberOfLines={1}>
-            {String(item.description)}
-          </Text>
-        ) : null,
-        item.git_repository ? (
-          <Text key="repo" style={styles.appRepo} numberOfLines={1}>
-            {`${String(item.git_repository)} (${String(item.git_branch || 'main')})`}
-          </Text>
-        ) : null,
-      ].filter(Boolean) as React.ReactNode[]}
+      meta={(() => {
+        const repo = (item as any)?.git_repository || (item as any)?.repository || (item as any)?.git_repo || (item as any)?.git_repo_url;
+        const branch = (item as any)?.git_branch || 'main';
+        return repo
+          ? [
+              <Text key="repo" style={styles.appRepo} numberOfLines={1}>
+                {`${String(repo)} (${String(branch)})`}
+              </Text>,
+            ]
+          : [];
+      })()}
       status={normalizeStatus('application', item.status)}
       showStatus={false}
       showUpdated={false}
@@ -356,7 +359,7 @@ const styles = StyleSheet.create({
   },
   appRepo: {
     fontSize: 11,
-    color: '#3B82F6',
+    color: '#6B7280',
     marginBottom: 0,
   },
   lastUpdate: {

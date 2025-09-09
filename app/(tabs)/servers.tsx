@@ -60,6 +60,7 @@ export default function ServersScreen() {
     return (
       <ListItem
         title={String(item.name)}
+        subtitle={item.description ? String(item.description) : undefined}
         leftIcons={[
           item.settings?.is_reachable 
             ? <SquarePlay key="i1" size={16} color="#10B981" />
@@ -82,11 +83,6 @@ export default function ServersScreen() {
           },
         ]}
         meta={[
-          item.description ? (
-            <Text key="desc" style={styles.serverDescription} numberOfLines={1}>
-              {String(item.description)}
-            </Text>
-          ) : null,
           <Text key="id" style={styles.serverId} numberOfLines={1}>
             {`ID: ${String(item.id)}`}
           </Text>
