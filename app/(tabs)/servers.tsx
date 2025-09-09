@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList, TouchableOpacity, Modal, Alert, Platform } from 'react-native';
 import { useCoolify } from '@/contexts/CoolifyContext';
 import { StatusChip } from '@/components/StatusChip';
 import { ConfigScreen } from '@/components/ConfigScreen';
@@ -106,6 +106,8 @@ export default function ServersScreen() {
     <>
       <View style={styles.header}>
         <Text style={styles.title}>Servers</Text>
+      </View>
+      <View style={styles.summaryBar}>
         <Text style={styles.headerSummary}>
           {String(totalServers)} total • {String(upServers)} up • {String(downServers)} down • {String(tunnelServers)} tunnels • {String(buildSlots)} slots
         </Text>
@@ -218,24 +220,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    padding: 24,
+    paddingTop: Platform.OS === 'ios' ? 64 : 44,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.85)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderBottomWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '800',
     color: '#111827',
+    letterSpacing: -0.5,
   },
   headerSummary: {
     marginTop: 6,
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: 14,
+    color: '#64748B',
+    fontWeight: '500',
   },
   progressContainer: {
     marginTop: 8,
@@ -247,6 +256,13 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     borderRadius: 9999,
+  },
+  summaryBar: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(248, 250, 252, 0.8)' : '#F8FAFC',
+    backdropFilter: Platform.OS === 'web' ? 'blur(10px)' : undefined,
+    borderBottomWidth: 0,
   },
   headerActions: {
     flexDirection: 'row',

@@ -7,7 +7,8 @@ import {
   RefreshControl, 
   TouchableOpacity,
   Switch,
-  Alert
+  Alert,
+  Platform
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useCoolify } from '@/contexts/CoolifyContext';
@@ -205,11 +206,16 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    padding: 24,
+    paddingTop: Platform.OS === 'ios' ? 64 : 44,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(255, 255, 255, 0.85)' : '#FFFFFF',
+    backdropFilter: Platform.OS === 'web' ? 'blur(20px)' : undefined,
+    borderBottomWidth: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
   },
   backButton: {
     padding: 8,
@@ -219,14 +225,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '800',
     color: '#111827',
+    letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: 14,
+    color: '#64748B',
     marginTop: 2,
+    fontWeight: '500',
   },
   controls: {
     flexDirection: 'row',
