@@ -148,7 +148,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       if (storedApplications) setApplications(JSON.parse(storedApplications));
       if (storedServices) setServices(JSON.parse(storedServices));
     } catch (err) {
-      console.error('Failed to load stored data:', err);
+      // failed to load stored data; continue with empty caches
     }
   };
 
@@ -177,10 +177,9 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     if (!isConfigured) return;
     try {
       const v = await coolifyApi.getVersion();
-      console.log('Version API Response:', v);
       setVersion(String(v));
     } catch (err) {
-      console.warn('Failed to fetch version', err);
+      // ignore version fetch errors silently
     }
   };
 
@@ -191,7 +190,6 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       if (!silent) setIsLoading(true);
       setRefreshingServers(true);
       const data = await coolifyApi.getServers();
-      console.log('Servers API Response:', data);
       setServers(data);
       await AsyncStorage.setItem(STORAGE_KEYS.SERVERS, JSON.stringify(data));
       setError(null);
@@ -209,7 +207,6 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     try {
       if (!silent) setIsLoading(true);
       const data = await coolifyApi.getDeployments();
-      console.log('Deployments API Response:', data);
       // Only update state/storage if something actually changed
       setDeployments(prev => {
         const changed = !areDeploymentsEqual(prev, data);
@@ -234,7 +231,6 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       if (!silent) setIsLoading(true);
       setRefreshingApplications(true);
       const data = await coolifyApi.getApplications();
-      console.log('Applications API Response:', data);
       setApplications(data);
       await AsyncStorage.setItem(STORAGE_KEYS.APPLICATIONS, JSON.stringify(data));
       setError(null);
@@ -253,7 +249,6 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
       if (!silent) setIsLoading(true);
       setRefreshingServices(true);
       const data = await coolifyApi.getServices();
-      console.log('Services API Response:', data);
       setServices(data);
       await AsyncStorage.setItem(STORAGE_KEYS.SERVICES, JSON.stringify(data));
       setError(null);
