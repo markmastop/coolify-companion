@@ -157,7 +157,23 @@ class CoolifyApiService {
 
   async getDeployments(): Promise<CoolifyDeployment[]> {
     const raw = await this.fetchApi<any>('/deployments');
-    return this.normalizeArrayResponse<CoolifyDeployment>(raw, ['deployments']);
+    // Prefer standard shapes first
+    let items = this.normalizeArrayResponse<CoolifyDeployment>(raw, ['deployments']);
+    // Some Coolify setups may return an object keyed by indexes (e.g. {"0": {...}, "1": {...}})
+    if ((items?.length ?? 0) === 0 && raw && typeof raw === 'object' && !Array.isArray(raw)) {
+      const values = Object.values(raw);
+      if (Array.isArray(values) && values.length > 0 && typeof values[0] === 'object') {
+        items = values as CoolifyDeployment[];
+      }
+    }
+    // Sort oldest first (by created_at, then id)
+    items = (items || []).filter(Boolean).sort((a, b) => {
+      const ta = new Date(String(a.created_at || 0)).getTime();
+      const tb = new Date(String(b.created_at || 0)).getTime();
+      if (ta !== tb) return ta - tb;
+      return Number(a.id || 0) - Number(b.id || 0);
+    });
+    return items;
   }
 
   async getApplications(): Promise<CoolifyApplication[]> {
