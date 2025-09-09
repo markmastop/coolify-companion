@@ -3,6 +3,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { coolifyApi } from '@/services/coolifyApi';
 import { CoolifyServer, CoolifyDeployment, CoolifyApplication, CoolifyService, ApiConfig } from '@/types/coolify';
 
+// Compare two deployment lists and detect meaningful changes
+function areDeploymentsEqual(a: CoolifyDeployment[], b: CoolifyDeployment[]): boolean {
+  if (a === b) return true;
+  if (!Array.isArray(a) || !Array.isArray(b)) return false;
+  if (a.length !== b.length) return false;
+  const sortById = (arr: CoolifyDeployment[]) =>
+    [...arr].sort((x, y) => String(x.deployment_uuid).localeCompare(String(y.deployment_uuid)));
+  const aa = sortById(a);
+  const bb = sortById(b);
+  for (let i = 0; i < aa.length; i++) {
+    const d1 = aa[i];
+    const d2 = bb[i];
+    if (String(d1.deployment_uuid) !== String(d2.deployment_uuid)) return false;
+    if (String(d1.status) !== String(d2.status)) return false;
+    if (String(d1.updated_at || '') !== String(d2.updated_at || '')) return false;
+    if (String(d1.finished_at || '') !== String(d2.finished_at || '')) return false;
+  }
+  return true;
+}
+
 interface CoolifyContextType {
   config: ApiConfig | null;
   servers: CoolifyServer[];
@@ -17,10 +37,10 @@ interface CoolifyContextType {
   refreshingApplications: boolean;
   refreshingServices: boolean;
   setConfig: (config: ApiConfig) => Promise<void>;
-  refreshServers: () => Promise<void>;
-  refreshDeployments: () => Promise<void>;
-  refreshApplications: () => Promise<void>;
-  refreshServices: () => Promise<void>;
+  refreshServers: (silent?: boolean) => Promise<void>;
+  refreshDeployments: (silent?: boolean) => Promise<void>;
+  refreshApplications: (silent?: boolean) => Promise<void>;
+  refreshServices: (silent?: boolean) => Promise<void>;
   refreshVersion: () => Promise<void>;
   clearError: () => void;
 }
@@ -66,7 +86,23 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     });
   }, []);
 
-  // Removed global polling; rely on pull-to-refresh and manual actions
+  // Silent polling for deployments: 30s baseline, 5s when active
+  useEffect(() => {
+    if (!isConfigured) return;
+    const hasActive = deployments.some(d => String(d.status).toLowerCase() === 'in_progress');
+    const intervalMs = hasActive ? 5000 : 30000;
+
+    // Do an immediate silent refresh when entering active state
+    if (hasActive) {
+      refreshDeployments(true).catch(() => {});
+    }
+
+    const interval = setInterval(() => {
+      refreshDeployments(true).catch(() => {});
+    }, intervalMs);
+
+    return () => clearInterval(interval);
+  }, [isConfigured, deployments]);
 
   // Ensure data is fetched immediately after configuration if caches are empty
   useEffect(() => {
@@ -148,11 +184,11 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     }
   };
 
-  const refreshServers = async () => {
+  const refreshServers = async (silent: boolean = false) => {
     if (!isConfigured) return;
     
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
       setRefreshingServers(true);
       const data = await coolifyApi.getServers();
       console.log('Servers API Response:', data);
@@ -162,33 +198,40 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     } catch (err) {
       setError(`Failed to fetch servers: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
       setRefreshingServers(false);
     }
   };
 
-  const refreshDeployments = async () => {
+  const refreshDeployments = async (silent: boolean = false) => {
     if (!isConfigured) return;
     
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
       const data = await coolifyApi.getDeployments();
       console.log('Deployments API Response:', data);
-      setDeployments(data);
-      await AsyncStorage.setItem(STORAGE_KEYS.DEPLOYMENTS, JSON.stringify(data));
+      // Only update state/storage if something actually changed
+      setDeployments(prev => {
+        const changed = !areDeploymentsEqual(prev, data);
+        if (changed) {
+          AsyncStorage.setItem(STORAGE_KEYS.DEPLOYMENTS, JSON.stringify(data)).catch(() => {});
+          return data;
+        }
+        return prev;
+      });
       setError(null);
     } catch (err) {
       setError(`Failed to fetch deployments: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   };
 
-  const refreshApplications = async () => {
+  const refreshApplications = async (silent: boolean = false) => {
     if (!isConfigured) return;
     
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
       setRefreshingApplications(true);
       const data = await coolifyApi.getApplications();
       console.log('Applications API Response:', data);
@@ -198,16 +241,16 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     } catch (err) {
       setError(`Failed to fetch applications: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
       setRefreshingApplications(false);
     }
   };
 
-  const refreshServices = async () => {
+  const refreshServices = async (silent: boolean = false) => {
     if (!isConfigured) return;
     
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
       setRefreshingServices(true);
       const data = await coolifyApi.getServices();
       console.log('Services API Response:', data);
@@ -217,7 +260,7 @@ export function CoolifyProvider({ children }: CoolifyProviderProps) {
     } catch (err) {
       setError(`Failed to fetch services: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
       setRefreshingServices(false);
     }
   };

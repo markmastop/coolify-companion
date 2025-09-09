@@ -87,6 +87,12 @@ export default function DashboardScreen() {
     return primary.includes('running');
   }).length;
   const applicationsDown = totalApplications - applicationsUp;
+  // Extra app stats for summary bar
+  const totalApps = totalApplications;
+  const appsRunning = applicationsUp;
+  const appsDown = applicationsDown;
+  const appsWithDomain = applications.filter(app => !!(app as any)?.fqdn).length;
+  const appsWithHealth = applications.filter(app => (app as any)?.health_check_enabled === true).length;
   
   // Services stats  
   const totalServices = services.length;
@@ -153,14 +159,22 @@ export default function DashboardScreen() {
           </View>
         </View>
       </View>
-      {version ? (
-        <View style={styles.versionBar}>
-          <View style={styles.versionContent}>
-            <TrendingUp size={14} color="#6366F1" />
-            <Text style={styles.versionText}>Version {String(version)}</Text>
-          </View>
+      <View style={styles.summaryBar}>
+        <Text style={styles.headerSummary}>
+          <TrendingUp size={14} color="#6366F1" /> Version {String(version)}
+        </Text>
+        <View style={styles.progressContainer}>
+          <View
+            style={[
+              styles.progressFill,
+              {
+                width: `${Math.round((appsRunning / Math.max(totalApps || 1, 1)) * 100)}%`,
+                backgroundColor: appsDown > 0 ? '#F59E0B' : '#10B981',
+              },
+            ]}
+          />
         </View>
-      ) : null}
+      </View>
       <ScrollView
         style={{ flex: 1 }}
         refreshControl={<RefreshControl refreshing={isLoading} onRefresh={onRefresh} />}
@@ -324,6 +338,31 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#64748B',
     fontWeight: '600',
+  },
+  // Summary bar below header (applications)
+  summaryBar: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: Platform.OS === 'web' ? 'rgba(248, 250, 252, 0.8)' : '#F8FAFC',
+    backdropFilter: Platform.OS === 'web' ? 'blur(10px)' : undefined,
+    borderBottomWidth: 0,
+  },
+  headerSummary: {
+    marginTop: 0,
+    fontSize: 14,
+    color: '#64748B',
+    fontWeight: '500',
+  },
+  progressContainer: {
+    marginTop: 8,
+    height: 6,
+    backgroundColor: '#E5E7EB',
+    borderRadius: 9999,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 9999,
   },
   connectionIndicator: {
     backgroundColor: '#DCFCE7',
