@@ -33,7 +33,7 @@ export default function LogsScreen() {
   });
   
   const scrollViewRef = useRef<ScrollView>(null);
-  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const refreshIntervalRef = useRef<number | null>(null);
 
   // Check if this app has running deployments
   const hasRunningDeployment = deployments.some(
@@ -44,14 +44,14 @@ export default function LogsScreen() {
   useEffect(() => {
     if (!isConfigured) {
       Alert.alert('Error', 'Please configure your Coolify connection first', [
-        { text: 'OK', onPress: () => router.replace('/(tabs)/index') }
+        { text: 'OK', onPress: () => router.replace('/') }
       ]);
       return;
     }
 
     if (!uuid) {
       Alert.alert('Error', 'No application UUID provided', [
-        { text: 'OK', onPress: () => router.replace('/(tabs)/applications') }
+        { text: 'OK', onPress: () => router.replace('/applications') }
       ]);
       return;
     }
@@ -115,7 +115,7 @@ export default function LogsScreen() {
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
     }
-    router.replace('/(tabs)/applications');
+    router.replace('/applications');
   };
 
   const onRefresh = async () => {
